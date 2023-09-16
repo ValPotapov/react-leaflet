@@ -1,4 +1,13 @@
-import { FC, useMemo, useRef, useState, useCallback, useEffect, MutableRefObject } from 'react';
+import {
+  FC,
+  useMemo,
+  useRef,
+  useState,
+  useCallback,
+  useEffect,
+  MutableRefObject,
+  memo,
+} from 'react';
 import { Button, Grid, Box, Typography } from '@mui/material';
 
 import { RouteList } from '../route-list';
@@ -22,7 +31,7 @@ type PropsRightMenu = {
   mapRef: MutableRefObject<any>;
 };
 
-const RightMenu: FC<PropsRightMenu> = ({ mapRef }) => {
+export const RightMenu: FC<PropsRightMenu> = memo(({ mapRef }) => {
   const dispatch = useAppDispatch();
   const routes = useAppSelector((state) => state.data.routes);
   const extraPoints = useAppSelector((state) => state.data.extraPoints);
@@ -215,6 +224,4 @@ const RightMenu: FC<PropsRightMenu> = ({ mapRef }) => {
       </Box>
     </Box>
   );
-};
-
-export { RightMenu };
+});

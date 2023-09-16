@@ -1,4 +1,4 @@
-import { FC, useRef, useEffect } from 'react';
+import { FC, useRef, useEffect, memo } from 'react';
 
 import { Marker as LeafletMarker, Popup } from 'react-leaflet';
 import { RouteDto } from '../../models';
@@ -17,7 +17,7 @@ type MarkerProps = {
   type: 'extraPoint' | 'routes';
 };
 
-const Marker: FC<MarkerProps> = ({ item, onClick, type }) => {
+export const Marker: FC<MarkerProps> = memo(({ item, onClick, type }) => {
   const theme = useTheme();
 
   const selectedRouteItem = useAppSelector((state) => state.routes.selectedRouteItem);
@@ -42,7 +42,7 @@ const Marker: FC<MarkerProps> = ({ item, onClick, type }) => {
       onClickShowMarker();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedRouteItem]);
+  }, [selectedRouteItem, item]);
 
   useEffect(() => {
     if (
@@ -55,7 +55,7 @@ const Marker: FC<MarkerProps> = ({ item, onClick, type }) => {
       onClickShowMarker();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedExtraPoint]);
+  }, [selectedExtraPoint, item]);
 
   const fill = {
     routes: theme.palette.primary.main,
@@ -85,6 +85,4 @@ const Marker: FC<MarkerProps> = ({ item, onClick, type }) => {
       </Popup>
     </LeafletMarker>
   );
-};
-
-export { Marker };
+});

@@ -1,4 +1,4 @@
-import { FC, MutableRefObject, useState, useCallback, useEffect, useMemo } from 'react';
+import { FC, MutableRefObject, useState, useCallback, useEffect, useMemo, memo } from 'react';
 import { MapContainer, TileLayer, Polyline } from 'react-leaflet';
 import { Box, useTheme } from '@mui/material';
 
@@ -21,7 +21,7 @@ type PropsRouteMap = {
   mapRef: MutableRefObject<any>;
 };
 
-export const RouteMap: FC<PropsRouteMap> = ({ mapRef }) => {
+export const RouteMap: FC<PropsRouteMap> = memo(({ mapRef }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
 
@@ -136,11 +136,23 @@ export const RouteMap: FC<PropsRouteMap> = ({ mapRef }) => {
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         <MarkerClusterGroup chunkedLoading>
           {selectedRoute.map((item, index) => {
-            return <Marker type="routes" item={item} key={index} onClick={handleClickRoute} />;
+            return (
+              <Marker
+                type="routes"
+                item={item}
+                key={`route-marker-item-${index}`}
+                onClick={handleClickRoute}
+              />
+            );
           })}
           {filteredExtraPoints.map((item, index) => {
             return (
-              <Marker type="extraPoint" item={item} key={index} onClick={handleClickExtraPoints} />
+              <Marker
+                type="extraPoint"
+                item={item}
+                key={`extra-point-marker-item-${index}`}
+                onClick={handleClickExtraPoints}
+              />
             );
           })}
         </MarkerClusterGroup>
@@ -150,4 +162,4 @@ export const RouteMap: FC<PropsRouteMap> = ({ mapRef }) => {
       </MapContainer>
     </Box>
   );
-};
+});
