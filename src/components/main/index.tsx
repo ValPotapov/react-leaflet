@@ -1,4 +1,4 @@
-import { ComponentType, useEffect, useMemo, useRef } from 'react';
+import { ComponentType, useEffect, useMemo, useRef, useState } from 'react';
 import { Box } from '@mui/material';
 import { RouteUploadFile } from '../../features';
 import { useFileUpload, useRoute } from '../../hooks';
@@ -9,6 +9,7 @@ import { dataActions, routesActions, useAppDispatch, useAppSelector } from '../.
 import { RouteMap } from '../../features/route-map';
 import { sortByKey } from '../../common/utils/sortByKey.utils';
 import { RouteDto } from '../../models';
+import L from 'leaflet';
 
 export const Main: ComponentType = () => {
   const dispatch = useAppDispatch();
@@ -29,7 +30,7 @@ export const Main: ComponentType = () => {
 
   const routesNotEmpty = useRef<boolean>(Object.keys(routes).length > 0);
 
-  const mapRef = useRef<any>(null);
+  const [map, setMap] = useState<L.Map | null>(null);
 
   const { search, planId, extraPointDate, routeDate, sortExtraPoint, sortRoute } = useAppSelector(
     (state) => state.filters
@@ -149,10 +150,10 @@ export const Main: ComponentType = () => {
       {routesNotEmpty ? (
         <>
           <Box width="100%">
-            <RouteMap mapRef={mapRef} />
+            <RouteMap setMap={setMap} map={map} />
           </Box>
           <RightMenu
-            mapRef={mapRef}
+            map={map}
             filteredRoutes={filteredRoutes}
             filteredExtraPoints={filteredExtraPoints}
           />

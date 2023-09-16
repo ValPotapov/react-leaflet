@@ -18,10 +18,11 @@ import { RouteDto } from '../../models';
 import dayjs from 'dayjs';
 
 type PropsRouteMap = {
-  mapRef: MutableRefObject<any>;
+  setMap: (value: L.Map | null) => void;
+  map: L.Map | null;
 };
 
-export const RouteMap: FC<PropsRouteMap> = memo(({ mapRef }) => {
+export const RouteMap: FC<PropsRouteMap> = memo(({ setMap, map }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
 
@@ -89,9 +90,9 @@ export const RouteMap: FC<PropsRouteMap> = memo(({ mapRef }) => {
 
         setRoutePolyline(coordinates);
 
-        if (mapRef?.current && coordinates.length) {
+        if (map && coordinates.length) {
           const bounds = L.latLngBounds(coordinates);
-          mapRef.current.fitBounds(bounds);
+          map.fitBounds(bounds);
         }
 
         if (selectedRoute.length) {
@@ -114,23 +115,23 @@ export const RouteMap: FC<PropsRouteMap> = memo(({ mapRef }) => {
       } else {
         setRoutePolyline(availableRoute.coordinates);
 
-        if (mapRef?.current && availableRoute.coordinates.length) {
+        if (map && availableRoute.coordinates.length) {
           const bounds = L.latLngBounds(availableRoute.coordinates);
-          mapRef.current.fitBounds(bounds);
+          map.fitBounds(bounds);
         }
 
         dispatch(routesActions.setLoading(false));
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedRoute]);
+  }, [selectedRoute, map]);
 
   return (
     <Box display="flex" width="100%" height="100%">
       <MapContainer
         center={[39.25082889999999, -119.9515585]}
         zoom={5}
-        ref={mapRef}
+        ref={setMap}
         style={{ width: '100%', height: '100%' }}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />

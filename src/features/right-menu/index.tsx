@@ -26,15 +26,16 @@ import TuneIcon from '@mui/icons-material/Tune';
 
 // import { reverseObjectKeys } from '../../common/utils/reverseObject.utils';
 import { sortByKey } from '../../common/utils/sortByKey.utils';
+import L from 'leaflet';
 
 type PropsRightMenu = {
-  mapRef: MutableRefObject<any>;
+  map: L.Map | null;
   filteredExtraPoints: RouteDto[];
   filteredRoutes: { [p: string]: RouteDto[] };
 };
 
 export const RightMenu: FC<PropsRightMenu> = memo(
-  ({ mapRef, filteredExtraPoints, filteredRoutes }) => {
+  ({ map, filteredExtraPoints, filteredRoutes }) => {
     const dispatch = useAppDispatch();
     const routes = useAppSelector((state) => state.data.routes);
 
@@ -83,25 +84,25 @@ export const RightMenu: FC<PropsRightMenu> = memo(
       (shipment: RouteDto) => {
         dispatch(routesActions.setSelectedExtraPoint(shipment));
 
-        if (mapRef.current) {
-          mapRef.current?.setView([shipment.latitude, shipment.longitude], 18);
+        if (map) {
+          map.setView([shipment.latitude, shipment.longitude], 18);
         }
       },
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      [mapRef.current]
+      [map]
     );
 
     const onSelectItemRoute = useCallback(
       (route: RouteDto) => {
         dispatch(routesActions.setSelectedRouteItem(route));
 
-        if (mapRef.current) {
-          mapRef.current?.setView([route.latitude, route.longitude], 18);
-          mapRef.current?.setView([route.latitude, route.longitude], 18);
+        if (map) {
+          map.setView([route.latitude, route.longitude], 18);
+          map.setView([route.latitude, route.longitude], 18);
         }
       },
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      [mapRef.current]
+      [map]
     );
 
     const handleReset = useCallback(() => {
