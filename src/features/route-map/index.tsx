@@ -28,7 +28,8 @@ export const RouteMap: FC<PropsRouteMap> = memo(({ setMap, map }) => {
 
   const [markers, setMarkers] = useState<RouteDto[]>([]);
   const [extraMarkers, setExtraMarkers] = useState<RouteDto[]>([]);
-
+  const selectedRouteItem = useAppSelector((state) => state.routes.selectedRouteItem);
+  const selectedExtraPoint = useAppSelector((state) => state.routes.selectedExtraPoint);
   const extraPoints = useAppSelector((state) => state.data.extraPoints);
   const selectedRoute = useAppSelector((state) => state.routes.selectedRoute);
 
@@ -176,13 +177,27 @@ export const RouteMap: FC<PropsRouteMap> = memo(({ setMap, map }) => {
         style={{ width: '100%', height: '100%' }}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <MarkerClusterGroup chunkedLoading removeOutsideVisibleBounds={false} maxClusterRadius={40}>
+        <MarkerClusterGroup
+          chunkedLoading
+          removeOutsideVisibleBounds={false}
+          maxClusterRadius={40}
+          disableClusteringAtZoom={18}
+        >
           {markers.length > 0 &&
             markers.map((item, index) => {
+              const isSelected =
+                selectedRouteItem &&
+                item.planID === selectedRouteItem?.planID &&
+                item.payload === selectedRouteItem?.payload &&
+                item.longitude === selectedRouteItem?.longitude &&
+                item.latitude === selectedRouteItem?.latitude;
+
               return (
                 <Marker
                   type="routes"
                   item={item}
+                  selectedRouteItem={isSelected ? selectedRouteItem : null}
+                  selectedExtraItem={null}
                   key={`route-marker-item-${index}`}
                   onClick={handleClickRoute}
                 />
@@ -190,10 +205,19 @@ export const RouteMap: FC<PropsRouteMap> = memo(({ setMap, map }) => {
             })}
           {extraMarkers.length > 0 &&
             extraMarkers.map((item, index) => {
+              const isSelected =
+                selectedExtraPoint &&
+                item.planID === selectedExtraPoint?.planID &&
+                item.payload === selectedExtraPoint?.payload &&
+                item.longitude === selectedExtraPoint?.longitude &&
+                item.latitude === selectedExtraPoint?.latitude;
+
               return (
                 <Marker
                   type="extraPoint"
                   item={item}
+                  selectedExtraItem={isSelected ? selectedExtraPoint : null}
+                  selectedRouteItem={null}
                   key={`extra-point-marker-item-${index}`}
                   onClick={handleClickExtraPoints}
                 />
