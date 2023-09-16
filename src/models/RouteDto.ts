@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 /* eslint-disable */
 
-import { Maybe } from "../types";
+import { Maybe } from '../types';
 
 export type RouteDto = {
   truckID: string;
@@ -18,6 +18,6 @@ export type RouteDto = {
   freeTime: Maybe<string>;
   loadedHours: Maybe<number>;
   freeHours: Maybe<number>;
+  planID: string;
   city: string;
 };
-

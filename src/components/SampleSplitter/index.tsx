@@ -1,0 +1,26 @@
+import React, { useState } from 'react';
+
+export const cn = (...args: any[]) => args.filter(Boolean).join(' ');
+
+const SampleSplitter = ({ id = 'drag-bar', dir = 'horizontal', isDragging, ...props }: any) => {
+  const [isFocused, setIsFocused] = useState(false);
+
+  return (
+    <div
+      id={id}
+      data-testid={id}
+      tabIndex={0}
+      className={cn(
+        'sample-drag-bar',
+        dir === 'horizontal' && 'sample-drag-bar--horizontal',
+        dir === 'vertical' && 'sample-drag-bar--vertical',
+        (isDragging || isFocused) && 'sample-drag-bar--dragging'
+      )}
+      onFocus={() => setIsFocused(true)}
+      onBlur={() => setIsFocused(false)}
+      {...props}
+    />
+  );
+};
+
+export { SampleSplitter };

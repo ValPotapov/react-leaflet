@@ -1,18 +1,16 @@
-import { Box, Button } from '@mui/material';
-import { ComponentType, useEffect, useState } from 'react';
-import { RouteList, RouteUploadFile } from '../../features';
-import { RouteData, useFileUpload, useRoute } from '../../hooks';
+import { ComponentType, useEffect, useRef } from 'react';
+import { Box } from '@mui/material';
+import { RouteUploadFile } from '../../features';
+import { useFileUpload, useRoute } from '../../hooks';
+import { RightMenu } from '../../features/right-menu';
+
+import { useAppSelector, useAppDispatch, dataActions } from '../../store';
+
 import { RouteMap } from '../../features/route-map';
-import { RouteDto } from '../../models';
 
-interface MainProps {}
-
-export const Main: ComponentType<MainProps> = () => {
-  const [routes, setRoutes] = useState<RouteData>({});
-  const [extraPoints, setExtraPoints] = useState<RouteDto[]>([]);
-  const [currentRoute, setCurrentRoute] = useState<string>('');
-  const cachedRoute = localStorage.getItem('routes');
-  const cachedExtraPoints = localStorage.getItem('extraPoints');
+export const Main: ComponentType = () => {
+  const dispatch = useAppDispatch();
+  const routes = useAppSelector((state) => state.data.routes);
 
   const {
     file,
@@ -23,58 +21,30 @@ export const Main: ComponentType<MainProps> = () => {
     handleInputChange,
     fileInputRef,
   } = useFileUpload(['csv'], 5 * 1024 * 1024);
+
   const { dataRoute, dataExtraPoints } = useRoute(file);
 
-  const routesKeys = Object.keys(routes);
-  const routesNotEmpty = routesKeys.length > 0;
+  const routesNotEmpty = Object.keys(routes).length > 0;
 
-  const handleSelect = (routeId: string) => {
-    setCurrentRoute(routeId);
-  };
-
-  const handleReset = () => {
-    setRoutes({});
-    setExtraPoints([]);
-    setCurrentRoute('');
-    localStorage.removeItem('routes');
-    localStorage.removeItem('extraPoints');
-  };
+  const mapRef = useRef<any>(null);
 
   useEffect(() => {
-    if (cachedRoute && cachedRoute.length > 2) {
-      setRoutes(JSON.parse(cachedRoute));
-    }
-    if (dataRoute && Object.keys(dataRoute).length > 0) {
-      setRoutes(dataRoute);
-      localStorage.setItem('routes', JSON.stringify(dataRoute));
+    if (Object.keys(dataRoute).length > 0) {
+      dispatch(dataActions.setRoutes(dataRoute));
     }
 
-    if (cachedExtraPoints && cachedExtraPoints.length > 0) {
-      setExtraPoints(JSON.parse(cachedExtraPoints));
-    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataRoute]);
 
-    if (dataExtraPoints && dataExtraPoints.length > 0) {
-      setExtraPoints(dataExtraPoints);
-      localStorage.setItem('extraPoints', JSON.stringify(dataExtraPoints));
+  useEffect(() => {
+    if (dataExtraPoints.length) {
+      dispatch(dataActions.setExtraPoints(dataExtraPoints));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cachedRoute, dataRoute, file]);
-
-  useEffect(() => {
-    if (!currentRoute && routesNotEmpty) {
-      setCurrentRoute(routesKeys['0']);
-    }
-  }, [currentRoute, routesKeys, routesNotEmpty]);
+  }, [dataExtraPoints]);
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'row',
-        height: '100vh',
-        width: '100%',
-      }}
-    >
+    <Box display="flex" position="relative" flexDirection="row" height="100vh" width="100%">
       {!routesNotEmpty ? (
         <RouteUploadFile
           file={file}
@@ -92,46 +62,10 @@ export const Main: ComponentType<MainProps> = () => {
       ) : null}
       {routesNotEmpty ? (
         <>
-          <RouteMap
-            route={routes[currentRoute]}
-            extraPoints={extraPoints}
-            sx={{
-              order: 1,
-              flex: '0 0 calc(100% - 360px)',
-              width: 'calc(100% - 360px)',
-            }}
-          />
-          <Box
-            sx={{
-              order: 2,
-              flex: '0 0 360px',
-              width: 360,
-              height: '100%',
-              bgcolor: 'background.paper',
-            }}
-          >
-            <Box
-              sx={{
-                p: 2,
-                flex: '0 0 68px',
-                height: '68px',
-              }}
-            >
-              <Button variant="contained" onClick={handleReset} fullWidth>
-                Сбросить
-              </Button>
-            </Box>
-            <RouteList
-              data={routes}
-              selectedId={currentRoute}
-              onSelect={(routeId) => handleSelect(routeId)}
-              sx={{
-                flex: '0 0 calc(100% - 68px)',
-                height: 'calc(100% - 68px)',
-                width: '100%',
-              }}
-            />
+          <Box width="100%">
+            <RouteMap mapRef={mapRef} />
           </Box>
+          <RightMenu mapRef={mapRef}  />
         </>
       ) : null}
     </Box>

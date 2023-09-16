@@ -1,7 +1,7 @@
-import Papa, { ParseLocalConfig } from "papaparse";
-import { useState, useEffect } from "react";
-import { camalize } from "../common/utils";
-import { RouteDto } from "../models";
+import Papa, { ParseLocalConfig } from 'papaparse';
+import { useState, useEffect } from 'react';
+import { camalize } from '../common/utils';
+import { RouteDto } from '../models';
 
 export type RouteData = Record<string, RouteDto[]>;
 export type ExtraPointsData = RouteDto[];
@@ -10,7 +10,7 @@ export const useRoute = (file: File | null) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<any>(null);
   const [dataRoute, setDataRoute] = useState<RouteData>({});
-  const [dataExtraPoints, setDataExtraPoints] = useState<ExtraPointsData>([]);  // points without routes
+  const [dataExtraPoints, setDataExtraPoints] = useState<ExtraPointsData>([]); // points without routes
 
   const transformHeader = (header: string) => camalize(header);
 
@@ -52,8 +52,8 @@ export const useRoute = (file: File | null) => {
         setIsLoading(false);
       }, 1000);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [file]);
 
-  return { dataRoute, dataExtraPoints, isLoading, error}
+  return { dataRoute, dataExtraPoints, isLoading, error };
 };

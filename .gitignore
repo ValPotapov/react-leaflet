@@ -24,6 +24,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+/.idea
+/.vscode
+
 # Large media files
 *.mp4
 *.tiff

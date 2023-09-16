@@ -6,6 +6,6 @@ export const ENDPOINTS = {
     LOGIN: '/api/logIn',
   },
   ORS: {
-    DIRECTION_FETCH: `/directions/driving-car/geojson`,
-  }
+    DIRECTION_FETCH: `directions/driving-car/geojson`,
+  },
 };

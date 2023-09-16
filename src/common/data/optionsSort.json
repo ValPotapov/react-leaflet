@@ -1,0 +1,43 @@
+{
+  "routes": [
+    "truckID",
+    "cargoSize",
+    "truckSize",
+    "hired",
+    "date",
+    "time",
+    "latitude",
+    "longitude",
+    "payload",
+    "routeID",
+    "loadedRouteID",
+    "includesJIT",
+    "loadedTime",
+    "freeTime",
+    "loadedHours",
+    "freeHours",
+    "city",
+    "uniquePackages",
+    "planID"
+  ],
+  "extraPoint": [
+    "truckID",
+    "truckSize",
+    "hired",
+    "date",
+    "time",
+    "latitude",
+    "longitude",
+    "payload",
+    "routeID",
+    "loadedRouteID",
+    "includesJIT",
+    "loadedTime",
+    "freeTime",
+    "loadedHours",
+    "freeHours",
+    "city",
+    "uniquePackages",
+    "planID"
+  ]
+}

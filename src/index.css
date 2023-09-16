@@ -1,0 +1,47 @@
+div[role='presentation'],
+div[role='dialog'] {
+  z-index: 99999;
+}
+
+.loading * {
+  cursor: wait !important;
+}
+
+.shipment__item {
+  cursor: pointer;
+}
+
+.shipment__item:hover {
+  opacity: 0.9;
+  background-color: azure;
+}
+
+.shipment__isSelected {
+  background-color: beige !important;
+}
+
+.sample-drag-bar--horizontal {
+  cursor: w-resize;
+  height: 100vh;
+  width: 2px;
+  background-color: white;
+}
+
+.sample-drag-bar--vertical {
+  cursor: n-resize;
+  height: 2px;
+  width: 100%;
+  background-color: antiquewhite;
+}
+
+.sample-drag-bar:hover {
+  background-color: burlywood;
+}
+
+.bg-burlywood {
+  background-color: burlywood;
+}
+
+.leaflet-popup {
+  margin-bottom: 50px;
+}
