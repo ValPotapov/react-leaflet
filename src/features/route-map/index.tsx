@@ -134,20 +134,15 @@ export const RouteMap: FC<PropsRouteMap> = ({ mapRef }) => {
         style={{ width: '100%', height: '100%' }}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        {selectedRoute.map((item, index) => {
+        <MarkerClusterGroup chunkedLoading>
+          {selectedRoute.map((item, index) => {
             return <Marker type="routes" item={item} key={index} onClick={handleClickRoute} />;
           })}
-        <MarkerClusterGroup disableClusteringAtZoom={18} chunkedLoading>
           {filteredExtraPoints.map((item, index) => {
-              return (
-                <Marker
-                  type="extraPoint"
-                  item={item}
-                  key={index}
-                  onClick={handleClickExtraPoints}
-                />
-              );
-            })}
+            return (
+              <Marker type="extraPoint" item={item} key={index} onClick={handleClickExtraPoints} />
+            );
+          })}
         </MarkerClusterGroup>
         {routePolyline?.length > 0 && (
           <Polyline positions={routePolyline} pathOptions={polylineOptions} />
