@@ -1,5 +1,5 @@
-import { FC, MutableRefObject, useState, useCallback, useEffect, useMemo, memo } from 'react';
-import { MapContainer, TileLayer, Polyline } from 'react-leaflet';
+import React, { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { MapContainer, Polyline, TileLayer } from 'react-leaflet';
 import { Box, useTheme } from '@mui/material';
 
 import 'leaflet/dist/leaflet.css';
@@ -10,7 +10,7 @@ import 'leaflet-routing-machine';
 import { Marker } from './Marker';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 
-import { useAppSelector, routesActions } from '../../store';
+import { routesActions, useAppSelector } from '../../store';
 
 import { getDrivingForMap } from '../../api';
 import { useDispatch } from 'react-redux';
@@ -26,6 +26,9 @@ export const RouteMap: FC<PropsRouteMap> = memo(({ setMap, map }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
 
+  const [markers, setMarkers] = useState<RouteDto[]>([]);
+  const [extraMarkers, setExtraMarkers] = useState<RouteDto[]>([]);
+
   const extraPoints = useAppSelector((state) => state.data.extraPoints);
   const selectedRoute = useAppSelector((state) => state.routes.selectedRoute);
 
@@ -38,6 +41,14 @@ export const RouteMap: FC<PropsRouteMap> = memo(({ setMap, map }) => {
   const polylineOptions = {
     color: theme.palette.primary.main,
   };
+
+  const handleSetMarkers = React.useCallback((value: RouteDto[]) => {
+    setMarkers(value);
+  }, []);
+
+  const handleSetExtraMarkers = React.useCallback((value: RouteDto[]) => {
+    setExtraMarkers(value);
+  }, []);
 
   const filteredExtraPoints = useMemo(() => {
     const currentShipment = extraPoints.filter((route) => !route.truckID);
@@ -126,6 +137,36 @@ export const RouteMap: FC<PropsRouteMap> = memo(({ setMap, map }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedRoute, map]);
 
+  React.useEffect(() => {
+    if (markers.length > 0) {
+      const newMarkers = selectedRoute.filter(
+        (item, i) =>
+          item.latitude !== markers[i].latitude && item.longitude !== markers[i].longitude
+      );
+
+      if (newMarkers.length > 0) {
+        handleSetMarkers(newMarkers);
+      }
+    } else {
+      handleSetMarkers(selectedRoute);
+    }
+  }, [selectedRoute, markers, handleSetMarkers]);
+
+  React.useEffect(() => {
+    if (extraMarkers.length > 0) {
+      const newMarkers = filteredExtraPoints.filter(
+        (item, i) =>
+          item.latitude !== extraMarkers[i].latitude && item.longitude !== extraMarkers[i].longitude
+      );
+
+      if (newMarkers.length > 0) {
+        handleSetExtraMarkers(newMarkers);
+      }
+    } else {
+      handleSetExtraMarkers(filteredExtraPoints);
+    }
+  }, [extraMarkers, filteredExtraPoints, handleSetExtraMarkers]);
+
   return (
     <Box display="flex" width="100%" height="100%">
       <MapContainer
@@ -135,27 +176,29 @@ export const RouteMap: FC<PropsRouteMap> = memo(({ setMap, map }) => {
         style={{ width: '100%', height: '100%' }}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <MarkerClusterGroup chunkedLoading>
-          {selectedRoute.map((item, index) => {
-            return (
-              <Marker
-                type="routes"
-                item={item}
-                key={`route-marker-item-${index}`}
-                onClick={handleClickRoute}
-              />
-            );
-          })}
-          {filteredExtraPoints.map((item, index) => {
-            return (
-              <Marker
-                type="extraPoint"
-                item={item}
-                key={`extra-point-marker-item-${index}`}
-                onClick={handleClickExtraPoints}
-              />
-            );
-          })}
+        <MarkerClusterGroup chunkedLoading removeOutsideVisibleBounds={false} maxClusterRadius={40}>
+          {markers.length > 0 &&
+            markers.map((item, index) => {
+              return (
+                <Marker
+                  type="routes"
+                  item={item}
+                  key={`route-marker-item-${index}`}
+                  onClick={handleClickRoute}
+                />
+              );
+            })}
+          {extraMarkers.length > 0 &&
+            extraMarkers.map((item, index) => {
+              return (
+                <Marker
+                  type="extraPoint"
+                  item={item}
+                  key={`extra-point-marker-item-${index}`}
+                  onClick={handleClickExtraPoints}
+                />
+              );
+            })}
         </MarkerClusterGroup>
         {routePolyline?.length > 0 && (
           <Polyline positions={routePolyline} pathOptions={polylineOptions} />

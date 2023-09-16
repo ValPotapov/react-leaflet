@@ -1,4 +1,4 @@
-import { FC, useRef, useEffect, memo } from 'react';
+import { FC, memo, useEffect, useRef } from 'react';
 
 import { Marker as LeafletMarker, Popup } from 'react-leaflet';
 import { RouteDto } from '../../models';
@@ -26,12 +26,14 @@ export const Marker: FC<MarkerProps> = memo(({ item, onClick, type }) => {
   const markerRef = useRef<any>(null);
 
   const onClickMarker = () => {
-    console.log('item: ', item);
     onClick(item);
   };
 
   const onClickShowMarker = () => {
     if (markerRef.current) {
+      if (!markerRef.current._icon) {
+        markerRef.current.__parent.spiderfy();
+      }
       markerRef.current.openPopup();
     }
   };
