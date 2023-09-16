@@ -139,34 +139,12 @@ export const RouteMap: FC<PropsRouteMap> = memo(({ setMap, map }) => {
   }, [selectedRoute, map]);
 
   React.useEffect(() => {
-    if (markers.length > 0) {
-      const newMarkers = selectedRoute.filter(
-        (item, i) =>
-          item.latitude !== markers[i].latitude && item.longitude !== markers[i].longitude
-      );
-
-      if (newMarkers.length > 0) {
-        handleSetMarkers(newMarkers);
-      }
-    } else {
-      handleSetMarkers(selectedRoute);
-    }
-  }, [selectedRoute, markers, handleSetMarkers]);
+    handleSetMarkers(selectedRoute);
+  }, [selectedRoute, handleSetMarkers]);
 
   React.useEffect(() => {
-    if (extraMarkers.length > 0) {
-      const newMarkers = filteredExtraPoints.filter(
-        (item, i) =>
-          item.latitude !== extraMarkers[i].latitude && item.longitude !== extraMarkers[i].longitude
-      );
-
-      if (newMarkers.length > 0) {
-        handleSetExtraMarkers(newMarkers);
-      }
-    } else {
-      handleSetExtraMarkers(filteredExtraPoints);
-    }
-  }, [extraMarkers, filteredExtraPoints, handleSetExtraMarkers]);
+    handleSetExtraMarkers(filteredExtraPoints);
+  }, [filteredExtraPoints, handleSetExtraMarkers]);
 
   return (
     <Box display="flex" width="100%" height="100%">
