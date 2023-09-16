@@ -25,6 +25,11 @@ export const Marker: FC<MarkerProps> = memo(({ item, onClick, type }) => {
 
   const markerRef = useRef<any>(null);
 
+  const onClickMarker = () => {
+    console.log('item: ', item);
+    onClick(item);
+  };
+
   const onClickShowMarker = () => {
     if (markerRef.current) {
       markerRef.current.openPopup();
@@ -65,7 +70,7 @@ export const Marker: FC<MarkerProps> = memo(({ item, onClick, type }) => {
   return (
     <LeafletMarker
       eventHandlers={{
-        click: () => onClick(item),
+        click: onClickMarker,
       }}
       ref={markerRef}
       position={[item.latitude, item.longitude]}
