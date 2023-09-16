@@ -177,12 +177,7 @@ export const RouteMap: FC<PropsRouteMap> = memo(({ setMap, map }) => {
         style={{ width: '100%', height: '100%' }}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <MarkerClusterGroup
-          chunkedLoading
-          removeOutsideVisibleBounds={false}
-          maxClusterRadius={40}
-          disableClusteringAtZoom={18}
-        >
+        <MarkerClusterGroup chunkedLoading removeOutsideVisibleBounds={false} maxClusterRadius={40}>
           {markers.length > 0 &&
             markers.map((item, index) => {
               const isSelected =
