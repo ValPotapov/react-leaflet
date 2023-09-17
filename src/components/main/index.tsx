@@ -1,8 +1,7 @@
-import { ComponentType, useEffect, useMemo, useRef, useState } from 'react';
+import React, { ComponentType, useEffect, useMemo, useState } from 'react';
 import { Box } from '@mui/material';
-import { RouteUploadFile } from '../../features';
+import { RightMenu, RouteUploadFile } from '../../features';
 import { useFileUpload, useRoute } from '../../hooks';
-import { RightMenu } from '../../features/right-menu';
 
 import { dataActions, routesActions, useAppDispatch, useAppSelector } from '../../store';
 
@@ -15,6 +14,7 @@ export const Main: ComponentType = () => {
   const dispatch = useAppDispatch();
   const routes = useAppSelector((state) => state.data.routes);
   const extraPoints = useAppSelector((state) => state.data.extraPoints);
+  const [isLoadingRoutes, setIsLoadingRoutes] = React.useState<boolean>(true);
 
   const {
     file,
@@ -28,7 +28,7 @@ export const Main: ComponentType = () => {
 
   const { dataRoute, dataExtraPoints } = useRoute(file);
 
-  const routesNotEmpty = useRef<boolean>(Object.keys(routes).length > 0);
+  const routesNotEmpty = Object.keys(routes).length > 0;
 
   const [map, setMap] = useState<L.Map | null>(null);
 
@@ -104,7 +104,7 @@ export const Main: ComponentType = () => {
 
     return {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [routes, search, planId, routeDate, sortRoute]);
+  }, [routes, search, planId, routeDate, sortRoute, routesNotEmpty]);
 
   useEffect(() => {
     if (Object.keys(dataRoute).length > 0) {
@@ -122,13 +122,17 @@ export const Main: ComponentType = () => {
   }, [dataExtraPoints]);
 
   useEffect(() => {
-    if (filteredRoutes) {
-      const firstRoute = Object.keys(filteredRoutes)[0];
+    if (routesNotEmpty) {
+      if (filteredRoutes) {
+        setIsLoadingRoutes(true);
+        const firstRoute = Object.keys(filteredRoutes)[0];
 
-      dispatch(routesActions.setSelectedRoute(filteredRoutes[firstRoute]));
+        dispatch(routesActions.setSelectedRoute(filteredRoutes[firstRoute]));
+        setIsLoadingRoutes(false);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [filteredRoutes, routesNotEmpty]);
 
   return (
     <Box display="flex" position="relative" flexDirection="row" height="100vh" width="100%">
@@ -149,14 +153,20 @@ export const Main: ComponentType = () => {
       ) : null}
       {routesNotEmpty ? (
         <>
-          <Box width="100%">
-            <RouteMap setMap={setMap} map={map} />
-          </Box>
-          <RightMenu
-            map={map}
-            filteredRoutes={filteredRoutes}
-            filteredExtraPoints={filteredExtraPoints}
-          />
+          {isLoadingRoutes ? (
+            <Box>Загрузка данных...</Box>
+          ) : (
+            <>
+              <Box width="100%">
+                <RouteMap setMap={setMap} map={map} />
+              </Box>
+              <RightMenu
+                map={map}
+                filteredRoutes={filteredRoutes}
+                filteredExtraPoints={filteredExtraPoints}
+              />
+            </>
+          )}
         </>
       ) : null}
     </Box>
