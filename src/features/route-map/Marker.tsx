@@ -1,4 +1,4 @@
-import { FC, memo, useEffect, useRef } from 'react';
+import { FC, memo, useRef } from 'react';
 
 import { Marker as LeafletMarker, Popup } from 'react-leaflet';
 import { RouteDto } from '../../models';
@@ -11,41 +11,41 @@ import L from 'leaflet';
 
 type MarkerProps = {
   item: RouteDto;
-  selectedRouteItem: RouteDto | null;
-  selectedExtraItem: RouteDto | null;
+  // selectedRouteItem: RouteDto | null;
+  // selectedExtraItem: RouteDto | null;
   onClick: (item: RouteDto) => void;
   type: 'extraPoint' | 'routes';
 };
 
 export const Marker: FC<MarkerProps> = memo(
-  ({ item, onClick, type, selectedRouteItem, selectedExtraItem }) => {
+  ({ item, onClick, type }) => { // remove from props --> , selectedRouteItem, selectedExtraItem 
     const theme = useTheme();
 
-    const markerRef = useRef<any>(null);
+    // const markerRef = useRef<any>(null);
 
     const onClickMarker = () => {
       onClick(item);
     };
 
-    const onClickShowMarker = () => {
-      if (markerRef.current) {
-        markerRef.current.openPopup();
-      }
-    };
+    // const onClickShowMarker = () => {
+    //   if (markerRef.current) {
+    //     markerRef.current.openPopup();
+    //   }
+    // };
 
-    useEffect(() => {
-      if (selectedRouteItem) {
-        onClickShowMarker();
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedRouteItem, item]);
+    // useEffect(() => {
+    //   if (selectedRouteItem) {
+    //     onClickShowMarker();
+    //   }
+    //   // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [selectedRouteItem, item]);
 
-    useEffect(() => {
-      if (selectedExtraItem) {
-        onClickShowMarker();
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedExtraItem, item]);
+    // useEffect(() => {
+    //   if (selectedExtraItem) {
+    //     onClickShowMarker();
+    //   }
+    //   // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [selectedExtraItem, item]);
 
     const fill = {
       routes: theme.palette.primary.main,
@@ -57,7 +57,7 @@ export const Marker: FC<MarkerProps> = memo(
         eventHandlers={{
           click: onClickMarker,
         }}
-        ref={markerRef}
+        // ref={markerRef}
         position={[item.latitude, item.longitude]}
         icon={
           new L.DivIcon({

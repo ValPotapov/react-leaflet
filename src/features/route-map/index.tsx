@@ -1,4 +1,4 @@
-import React, { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { FC, memo, useEffect, useMemo, useState } from 'react';
 import { MapContainer, Polyline, TileLayer } from 'react-leaflet';
 import { Box, useTheme } from '@mui/material';
 
@@ -7,8 +7,9 @@ import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 import L from 'leaflet';
 import 'leaflet-routing-machine';
 
-import { Marker } from './Marker';
-import MarkerClusterGroup from 'react-leaflet-cluster';
+// import { Marker } from './Marker';
+// import MarkerClusterGroup from 'react-leaflet-cluster';
+import ClusterCroup from './ClusterGroup';
 
 import { routesActions, useAppSelector } from '../../store';
 
@@ -28,8 +29,8 @@ export const RouteMap: FC<PropsRouteMap> = memo(({ setMap, map }) => {
 
   const [markers, setMarkers] = useState<RouteDto[]>([]);
   const [extraMarkers, setExtraMarkers] = useState<RouteDto[]>([]);
-  const selectedRouteItem = useAppSelector((state) => state.routes.selectedRouteItem);
-  const selectedExtraPoint = useAppSelector((state) => state.routes.selectedExtraPoint);
+  // const selectedRouteItem = useAppSelector((state) => state.routes.selectedRouteItem);
+  // const selectedExtraPoint = useAppSelector((state) => state.routes.selectedExtraPoint);
   const extraPoints = useAppSelector((state) => state.data.extraPoints);
   const selectedRoute = useAppSelector((state) => state.routes.selectedRoute);
 
@@ -71,20 +72,20 @@ export const RouteMap: FC<PropsRouteMap> = memo(({ setMap, map }) => {
     return result;
   }, [search, extraPoints, planId, extraPointDate]);
 
-  const handleClickExtraPoints = useCallback((item: RouteDto) => {
-    dispatch(routesActions.setSelectedExtraPoint(item));
+  // const handleClickExtraPoints = useCallback((item: RouteDto) => {
+  //   dispatch(routesActions.setSelectedExtraPoint(item));
 
-    document
-      .getElementById(`${item.payload}${item.latitude}${item.longitude}`)
-      ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  //   document
+  //     .getElementById(`${item.payload}${item.latitude}${item.longitude}`)
+  //     ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
-  const handleClickRoute = useCallback((item: RouteDto) => {
-    dispatch(routesActions.setSelectedRouteItem(item));
+  // const handleClickRoute = useCallback((item: RouteDto) => {
+  //   dispatch(routesActions.setSelectedRouteItem(item));
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   useEffect(() => {
     const initial = async () => {
@@ -155,7 +156,8 @@ export const RouteMap: FC<PropsRouteMap> = memo(({ setMap, map }) => {
         style={{ width: '100%', height: '100%' }}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <MarkerClusterGroup chunkedLoading removeOutsideVisibleBounds={false} maxClusterRadius={40}>
+        <ClusterCroup map={map}></ClusterCroup>
+        {/* <MarkerClusterGroup chunkedLoading removeOutsideVisibleBounds={false} maxClusterRadius={40}>
           {markers.length > 0 &&
             markers.map((item, index) => {
               const isSelected =
@@ -196,7 +198,7 @@ export const RouteMap: FC<PropsRouteMap> = memo(({ setMap, map }) => {
                 />
               );
             })}
-        </MarkerClusterGroup>
+        </MarkerClusterGroup> */}
         {routePolyline?.length > 0 && (
           <Polyline positions={routePolyline} pathOptions={polylineOptions} />
         )}
