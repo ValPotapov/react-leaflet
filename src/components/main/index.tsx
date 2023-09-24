@@ -127,7 +127,7 @@ export const Main: ComponentType = () => {
         setIsLoadingRoutes(true);
         const firstRoute = Object.keys(filteredRoutes)[0];
 
-        dispatch(routesActions.setSelectedRoute(filteredRoutes[firstRoute]));
+        if (firstRoute) dispatch(routesActions.setSelectedRoute(filteredRoutes[firstRoute])); // add Igor
         setIsLoadingRoutes(false);
       }
     }
@@ -158,7 +158,7 @@ export const Main: ComponentType = () => {
           ) : (
             <>
               <Box width="100%">
-                <RouteMap setMap={setMap} map={map} />
+                  <RouteMap setMap={setMap} map={map} />
               </Box>
               <RightMenu
                 map={map}

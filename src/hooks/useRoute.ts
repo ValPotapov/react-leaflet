@@ -42,6 +42,7 @@ export const useRoute = (file: File | null) => {
     step: handleParse,
     transformHeader: transformHeader,
     error: handleError,
+    skipEmptyLines: true // addIgor remove empty string from csv
   };
 
   useEffect(() => {
