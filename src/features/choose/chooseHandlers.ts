@@ -8,7 +8,7 @@ const findOneMarkerAndOpen = (map: any, shipment: any) => {
     if (map._layers.hasOwnProperty(key)) {
       if (map._layers[key]?.options.data === `markerKey-${shipment.unicKey}`) {
         findMarker = map._layers[key]
-        setTimeout(() => findMarker.openPopup(), 300)
+        setTimeout(() => findMarker.openPopup(), 500)
         return true
       }
     }
@@ -29,7 +29,7 @@ const findOneClusterAndOpen = (map: any, shipment: any) => {
     setTimeout(() => {
       icon.click()
       findOneMarkerAndOpen(map, shipment)
-    }, 700)
+    }, 800)
   }
 }
 
