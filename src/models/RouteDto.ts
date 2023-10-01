@@ -20,4 +20,5 @@ export type RouteDto = {
   freeHours: Maybe<number>;
   planID: string;
   city: string;
+  unicKey: string;
 };

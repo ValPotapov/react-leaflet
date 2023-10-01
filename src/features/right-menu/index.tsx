@@ -15,7 +15,7 @@ import { RouteList } from '../route-list';
 import { RouteDto } from '../../models';
 import { ShipmentList } from '../shipment-list';
 import { Filters } from '../filters';
-
+import { findOneMarkerAndOpen, findOneClusterAndOpen } from '../choose/chooseHandlers';
 import { useAppSelector, useAppDispatch, routesActions, dataActions } from '../../store';
 
 import { useResizable } from 'react-resizable-layout';
@@ -29,7 +29,7 @@ import { sortByKey } from '../../common/utils/sortByKey.utils';
 import L from 'leaflet';
 
 type PropsRightMenu = {
-  map: L.Map | null;
+  map: L.Map | null | any;
   filteredExtraPoints: RouteDto[];
   filteredRoutes: { [p: string]: RouteDto[] };
 };
@@ -69,24 +69,27 @@ export const RightMenu: FC<PropsRightMenu> = memo(
     const wrapperWidth = wrapperRef.current?.clientWidth;
 
     const handleSelectRoute = useCallback(
-      (route: string) => {
+      (route: string | any) => {
         dispatch(routesActions.setSelectedRoute(filteredRoutes[route]));
 
         dispatch(routesActions.setLoading(true));
 
-        dispatch(routesActions.setSelectedExtraPoint(null));
+        // dispatch(routesActions.setSelectedExtraPoint(null));
+        dispatch(routesActions.setSelectedExtraPoint(route));
       },
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      [filteredRoutes]
+      [filteredRoutes, map]
     );
 
     const handleSelectExtraPoint = useCallback(
       (shipment: RouteDto) => {
-        dispatch(routesActions.setSelectedExtraPoint(shipment));
 
         if (map) {
           map.setView([shipment.latitude, shipment.longitude], 18);
+
+          if (!findOneMarkerAndOpen(map, shipment)) findOneClusterAndOpen(map, shipment)
         }
+        dispatch(routesActions.setSelectedExtraPoint(shipment));
       },
       // eslint-disable-next-line react-hooks/exhaustive-deps
       [map]
@@ -99,6 +102,7 @@ export const RightMenu: FC<PropsRightMenu> = memo(
         if (map) {
           map.setView([route.latitude, route.longitude], 18);
           map.setView([route.latitude, route.longitude], 18);
+          if (!findOneMarkerAndOpen(map, route)) findOneClusterAndOpen(map, route)
         }
       },
       // eslint-disable-next-line react-hooks/exhaustive-deps

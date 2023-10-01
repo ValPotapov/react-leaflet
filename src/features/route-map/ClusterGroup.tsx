@@ -106,7 +106,7 @@ const ClusterCroup: FC<ClusterCroupProps> = memo(({ map }) => {
                 type="routes"
                 item={item}
                 // key={item.unicKey}
-                key={`route-marker-item-${index}`}
+                key={item.unicKey}
                 onClick={handleClickRoute}
               />
             );
@@ -118,8 +118,8 @@ const ClusterCroup: FC<ClusterCroupProps> = memo(({ map }) => {
               <Marker
                 type="extraPoint"
                 item={item}
-                // key={item.unicKey}
-                key={`extra-point-marker-item-${index}`}
+                key={item.unicKey}
+                // key={`extra-point-marker-item-${index}`}
                 onClick={handleClickExtraPoints}
               />
             );

@@ -1,53 +1,24 @@
-import { FC, memo, useRef, useEffect } from 'react';
+import { FC, memo, useRef } from 'react';
 
 import { Marker as LeafletMarker, Popup } from 'react-leaflet';
-import { RouteDto } from '../../models';
-import { useAppSelector } from '../../store';
+// import { RouteDto } from '../../models';
+
 import { RouteInfo } from './route-info';
 
 import { useTheme } from '@mui/material';
-
+// import { routesActions, useAppSelector } from '../../store';
 import L from 'leaflet';
-
-type MarkerProps = {
-  item: RouteDto;
-  // selectedRouteItem: RouteDto | null;
-  // selectedExtraItem: RouteDto | null;
-  onClick: (item: RouteDto) => void;
-  type: 'extraPoint' | 'routes';
-};
+import { MarkerProps } from '../../types/myMarkerTypes';
 
 export const Marker: FC<MarkerProps> = memo(
-  ({ item, onClick, type }) => { // remove from props --> , selectedRouteItem, selectedExtraItem 
-    const theme = useTheme();
-    const selectedExtraItem = useAppSelector((state) => state.routes.selectedExtraPoint);
-    console.log("▶ ⇛ selectedExtraItem:", selectedExtraItem);
+  ({ item, onClick, type, props }) => { // remove from props --> , selectedRouteItem, selectedExtraItem 
 
+    const theme = useTheme();
     const markerRef = useRef<any>(null);
 
     const onClickMarker = () => {
       onClick(item);
     };
-
-    const onClickShowMarker = () => {
-      if (markerRef.current) {
-        markerRef.current.openPopup();
-      }
-    };
-
-    // useEffect(() => {
-    //   if (selectedRouteItem) {
-    //     onClickShowMarker();
-    //   }
-    //   // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [selectedRouteItem, item]);
-
-    // useEffect(() => {
-    //   if (selectedExtraItem) {
-    //     onClickShowMarker();
-    //   }
-    //   // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, []);
 
     const fill = {
       routes: theme.palette.primary.main,
@@ -56,9 +27,11 @@ export const Marker: FC<MarkerProps> = memo(
 
     return (
       <LeafletMarker
+        {...props}
         eventHandlers={{
-          click: onClickMarker,
+          click: () => onClickMarker(),
         }}
+        data={`markerKey-${item.unicKey}`}
         ref={markerRef}
         position={[item.latitude, item.longitude]}
         icon={

@@ -2,6 +2,7 @@ import Papa, { ParseLocalConfig } from 'papaparse';
 import { useState, useEffect } from 'react';
 import { camalize } from '../common/utils';
 import { RouteDto } from '../models';
+import { v4 as uuidv4 } from 'uuid';
 
 export type RouteData = Record<string, RouteDto[]>;
 export type ExtraPointsData = RouteDto[];
@@ -20,6 +21,7 @@ export const useRoute = (file: File | null) => {
 
   const handleParse = (results: any) => {
     const { data: rawData } = results;
+    rawData.unicKey = uuidv4()
     const { routeID } = rawData;
     if (routeID === 0 || routeID === '0') {
       setDataExtraPoints((prev: ExtraPointsData) => {

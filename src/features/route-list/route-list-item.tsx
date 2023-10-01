@@ -67,7 +67,8 @@ export const RouteListItem: ComponentType<RouteListItemProps> = memo(
                 selectedItem?.freeHours === item.freeHours;
 
               return (
-                <Fragment key={`key-${item.routeID}-${index}`}>
+                // <Fragment key={`key-${item.routeID}-${index}`}>
+                <Fragment key={`key-${item.routeID}-${item.unicKey}`}>
                   <Stack
                     className={`shipment__item ${isSelected ? 'shipment__isSelected' : ''}`}
                     onClick={() => onSelectItem(item)}
