@@ -55,6 +55,10 @@ export const useRoute = (file: File | null) => {
         setIsLoading(false);
       }, 1000);
     }
+    return () => {
+      setDataRoute({})
+      setDataExtraPoints([])
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [file]);
 
