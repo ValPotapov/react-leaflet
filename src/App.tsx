@@ -4,12 +4,14 @@ import { RouteObject, useLocation, useRoutes } from 'react-router-dom';
 import { localizeRoutes } from './common/utils';
 import { ROUTES } from './constants';
 import { Main } from './components';
+import MainCars from './components/MainCars/MainCars';
 
 const routes: RouteObject[] = [
   {
     path: ROUTES.HOME,
     element: <Main />,
   },
+  { path: "cars", element: <MainCars /> }
 ];
 
 export const App = () => {

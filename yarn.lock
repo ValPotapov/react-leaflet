@@ -2554,6 +2554,13 @@
   "resolved" "https://registry.npmjs.org/@types/json5/-/json5-0.0.29.tgz"
   "version" "0.0.29"
 
+"@types/leaflet-rotatedmarker@^0.2.4":
+  "integrity" "sha512-y76US/wbeTBys1EO6fvOvHIESacc8Y22RsOIrAmyttBu+k/+OGHqkY6zt0XQcknzVnOUI7nxds8+SO0shJYfSQ=="
+  "resolved" "https://registry.npmjs.org/@types/leaflet-rotatedmarker/-/leaflet-rotatedmarker-0.2.4.tgz"
+  "version" "0.2.4"
+  dependencies:
+    "@types/leaflet" "*"
+
 "@types/leaflet-routing-machine@^3.2.4":
   "integrity" "sha512-CFcWghU+eDel/zY2Q1u1tI6rxL2V6SfJ85/prt7s2QEw8tK+OkH+o5PLm/7eYsZH86i30ff5rmEk8GN1nZ9ODg=="
   "resolved" "https://registry.npmjs.org/@types/leaflet-routing-machine/-/leaflet-routing-machine-3.2.4.tgz"
@@ -3377,10 +3384,10 @@
   dependencies:
     "follow-redirects" "^1.14.0"
 
-"axios@^1.5.0":
-  "integrity" "sha512-D4DdjDo5CY50Qms0qGQTTw6Q44jl7zRwY7bthds06pUGfChBCTcQs+N743eFWGEd6pRTMd6A+I87aWyFV5wiZQ=="
-  "resolved" "https://registry.npmjs.org/axios/-/axios-1.5.0.tgz"
-  "version" "1.5.0"
+"axios@^1.5.1":
+  "integrity" "sha512-EZ1DYihju9pwVB+jg67ogm+Tmqc6JmhamRN6I4Zt8DfZu5lbcQGw3ozH9lFejSJgs/ibaef3A9PMXPLeefFGJg=="
+  "resolved" "https://registry.npmjs.org/axios/-/axios-1.6.0.tgz"
+  "version" "1.6.0"
   dependencies:
     "follow-redirects" "^1.15.0"
     "form-data" "^4.0.0"
@@ -7237,6 +7244,11 @@
   dependencies:
     "picocolors" "^1.0.0"
     "shell-quote" "^1.7.3"
+
+"leaflet-rotatedmarker@^0.2.0":
+  "integrity" "sha512-yc97gxLXwbZa+Gk9VCcqI0CkvIBC9oNTTjFsHqq4EQvANrvaboib4UdeQLyTnEqDpaXHCqzwwVIDHtvz2mUiDg=="
+  "resolved" "https://registry.npmjs.org/leaflet-rotatedmarker/-/leaflet-rotatedmarker-0.2.0.tgz"
+  "version" "0.2.0"
 
 "leaflet-routing-machine@^3.2.12":
   "integrity" "sha512-HLde58G1YtD9xSIzZavJ6BPABZaV1hHeGst8ouhzuxmSC3s32NVtADT+njbIUMW1maHRCrsgTk/E4hz5QH7FrA=="
