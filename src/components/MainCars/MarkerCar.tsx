@@ -5,33 +5,37 @@ import L from 'leaflet';
 import 'leaflet-rotatedmarker';
 
 import carsPageconfig from './lib/config';
+import { useAppDispatch, useAppSelector, carsMapActions } from '../../store';
 
-import { ICars } from '../../types/carsTypes';
-import NoConnection from './SvgIcon';
+import { ICarObject } from '../../types/carsTypes';
+import { IconDisconnect } from './IconDisconnect';
 import CustomPopup from './CustomPopup';
 import style from './style.module.css';
 interface CarProps {
-  car: ICars
+  car: ICarObject
 }
 interface IiconImageSize {
   width: number;
   height: number;
 }
 
-const MarkerCar: FC<CarProps> = React.memo(({ car }) => {
+const MarkerCar: FC<CarProps> = ({ car }) => {
 
-  // Что бы изменть размер картики нужно поменять только width
+  const dispatch = useAppDispatch()
+  // const carsIsConnectFilter = useAppSelector((state) => state.carsMap.isConnectFilter);
+
+  // Что бы изменить размер картики нужно поменять только width
   const [imageSize, setImageSize] = useState<IiconImageSize>({ width: 16, height: 0 })
 
-  // console.log("▶ ⇛ map:", map);
   function timeDifference(dateString: string) {
     const lastTrack = new Date(dateString)
     const dif = Date.now() - lastTrack.getTime()
-    const oneHour = carsPageconfig.differentTime
+    const oneHour = carsPageconfig.differentTime // Значение в config.js
 
-    return dif < oneHour // Если с последнего track прошло меньше часа - true иначе false
+    return dif < oneHour // Если с последнего track прошло меньше [часа] - true иначе false
   }
 
+  // Если true значит авто "в сети"
   const isConnection = timeDifference(String(car.last_track))
 
   function getImgUrl(id: number) {
@@ -52,7 +56,14 @@ const MarkerCar: FC<CarProps> = React.memo(({ car }) => {
       setImageSize({ ...imageSize, height: imageSize.width * proportions })
     };
 
-  }, [car])
+  }, [])
+
+  // Каждый раз при рендере маркера в store ложаться(обновляются) ключи объекта isConnectFilter
+  // Объект типа {car_id(id) : boolean(isConnection), ...}
+  useEffect(() => {
+    dispatch(carsMapActions.setCarsIsConnectFilter({ [Number(car.car_id)]: isConnection }))
+  })
+
 
   return (
     <LeafletMarker
@@ -95,7 +106,7 @@ const MarkerCar: FC<CarProps> = React.memo(({ car }) => {
           className={isConnection ? [style.carTooltip, style.carBgWhite].join(' ') : [style.carTooltip, style.carBgGrey].join(' ')}
         >
           {car.car_name}
-          {!isConnection && <NoConnection />}
+          {!isConnection && <IconDisconnect className={style.tooltipSvg} />}
         </div>
 
       </Tooltip>}
@@ -103,6 +114,5 @@ const MarkerCar: FC<CarProps> = React.memo(({ car }) => {
     </LeafletMarker>
   )
 }
-)
 
 export default MarkerCar

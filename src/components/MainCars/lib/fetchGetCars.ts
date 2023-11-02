@@ -1,8 +1,8 @@
-import { ICarServerData } from "../../../types/carsTypes";
+import { ICompanyData } from "../../../types/carsTypes";
 
 // https://user-headers.onrender.com/cars
 // http://89.108.99.163/gps/gpsapi.php/all_cars?park_id=1
-async function getCarsFetch(): Promise<ICarServerData> {
+async function getCarsFetch(): Promise<ICompanyData> {
   try {
     const response = await fetch('https://user-headers.onrender.com/cars', {
       method: 'GET',
@@ -17,7 +17,7 @@ async function getCarsFetch(): Promise<ICarServerData> {
 
 
     if (response.ok) {
-      const data: ICarServerData = await response.json();
+      const data: ICompanyData = await response.json();
       return data;
     } else {
       console.error('Ошибка при получении данных:', response.statusText);
