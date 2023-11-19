@@ -1,33 +1,37 @@
-import React, { useState, useEffect, FC } from 'react'
+import React, { useState, FC } from 'react'
+import { useAppDispatch, useAppSelector, carsMapActions } from '../../store';
 
-// import L from 'leaflet';
+import L from 'leaflet';
 import Control from 'react-leaflet-custom-control'
 
 import style from './style.module.css'
-import { ICompanyName } from '../../types/carsTypes';
 
 import { Menu, Stack, Tooltip, IconButton } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-
+import MenuItemCar from './MenuItemCar';
 
 interface ICustomLayerControl {
-  menuHeaderData: ICompanyName,
-  children: React.ReactNode,
+  // menuHeaderData?: ICompanyName,
+  children?: React.ReactNode,
 }
-const CustomLayerControl: FC<ICustomLayerControl> = ({ menuHeaderData, children }) => {
+const CarsLayerControl: FC<ICustomLayerControl> = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
+  const menuHeaderData = useAppSelector((state) => state.carsMap.companyName);
+
   const open = Boolean(anchorEl);
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
 
   return (
-    <React.Fragment>
-      <Control position='topleft'>
+    <div>
+      <Control position='topleft' prepend={false} >
         <Tooltip title="Map settings">
           <IconButton
             onClick={handleClick}
@@ -38,7 +42,7 @@ const CustomLayerControl: FC<ICustomLayerControl> = ({ menuHeaderData, children 
             aria-expanded={open ? 'true' : undefined}
             className={style.menuIconButton}
           >
-            <MenuIcon sx={{ width: 20, height: 20 }} className={style.menuIcon} />
+            <MenuIcon sx={{ width: 20, height: 20 }} />
           </IconButton>
         </Tooltip>
       </Control>
@@ -81,21 +85,20 @@ const CustomLayerControl: FC<ICustomLayerControl> = ({ menuHeaderData, children 
         anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
       >
         <Stack display={'flex'} justifyContent={'centr'} margin={'auto'}>
-          <span className={style.menuCompanyName} id={String(menuHeaderData.company_id)}>
-            {menuHeaderData.company_name}
+          <span className={style.menuCompanyName} id={String(menuHeaderData?.company_id)}>
+            {menuHeaderData?.company_name}
           </span>
         </Stack>
         <Stack className={style.carsMenuBlock}>
-          {children}
-          {/* {companyData && [...companyData.cars].map((carData) =>
-            (<MenuItemsCars carData={carData} key={`menulist` + carData.car_id}></MenuItemsCars>)
-          )} */}
+
+          <MenuItemCar></MenuItemCar>
+
         </Stack>
 
       </Menu>
 
-    </React.Fragment>
+    </div>
   );
 }
 
-export default CustomLayerControl;
+export default React.memo(CarsLayerControl);

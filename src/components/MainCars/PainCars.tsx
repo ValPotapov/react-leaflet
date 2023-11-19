@@ -1,20 +1,18 @@
 import { useState, useEffect, useMemo, FC } from 'react';
+
 import { Pane, useMap } from 'react-leaflet';
+import 'leaflet-rotatedmarker';
+import L from 'leaflet';
 
 import { useAppDispatch, useAppSelector, carsMapActions } from '../../store';
+import getCarsFetch from './lib/fetchGetCars';
+import isHasToushScreen from './lib/isMobile';
+import carsPageconfig from './lib/config';
 
-import L from 'leaflet';
-import 'leaflet-rotatedmarker';
 import { ICarObject, ICompanyData, ICompanyName } from '../../types/carsTypes';
 
 import MarkerCar from './MarkerCar';
-import getCarsFetch from './lib/fetchGetCars';
-import carsPageconfig from './lib/config';
-import isHasToushScreen from './lib/isMobile';
-
-import CustomLayerControl from '../MenuCars/CustomLayerControl';
-// import TestControl from '../MenuCars/TestControl';
-import MenuItemCar from '../MenuCars/MenuItemCar';
+import CarsLayerControl from '../MenuCars/CarsLayerControl';
 
 type IPainCars = L.LatLngBoundsExpression | [][] | any
 
@@ -23,14 +21,10 @@ const PainCars: FC<IPainCars> = ({ mapBounds, carsDataStart }) => {
   // carsDataStart - массив объектов с данными cars для первого рендере
 
   const dispatch = useAppDispatch()
-  const carsForMenuFromStore = useAppSelector((state) => state.carsMap?.forMenu);
   const carsFilterObject = useAppSelector((state) => state.carsMap.carsFilter);
-
-  // console.log("▶ ⇛ carsForMenuFromStore:", carsForMenuFromStore);
 
   const [companyData, setCompanyData] = useState<ICompanyData>(carsDataStart)
   const isMobile = useMemo(() => isHasToushScreen(), [])// mobile -> true ? PC -> false
-
   const map = useMap();
 
   // Формируем массив для передачи в Marker перед фильтром
@@ -74,32 +68,24 @@ const PainCars: FC<IPainCars> = ({ mapBounds, carsDataStart }) => {
     return dataObj
   }
 
+  // Данные для меню 
   const dataForMenuItem = useMemo(() => getdataForMenuItem(companyData), [carsDataStart])
-
-  // const updateMap = useCallback(() => {
-  //   const actualBounds: IPainCars = getBoundsFromCarsData(carsData)
-  //   map.panInsideBounds(actualBounds)
-  //   // map.fitBounds(actualBounds)
-  //   // setTimeout(() => {
-  //   //   if (isMobile) map.zoomOut()
-  //   //   map.panBy([0, carsPageconfig.offsetMapPan], { animate: true });
-  //   // }, 300)
-  // }, [map])
-
-  // const updateMapWhenNoUser = useMemo(() => {
-  //   return debounce(updateMap, carsPageconfig.updatePosMap)
-  // }, [updateMap])
 
   // Получение данных с сервера
   useEffect(() => {
+    const abortController = new AbortController();
     const interval = setInterval(() => {
-      getCarsFetch()
+      getCarsFetch(abortController)
         .then(data => {
           setCompanyData(data)
         })
 
     }, carsPageconfig.updateDelay);
-    return () => clearInterval(interval);
+
+    return () => {
+      clearInterval(interval)
+      abortController.abort();
+    };
   }, [map, mapBounds]);
 
   useEffect(() => {
@@ -108,49 +94,40 @@ const PainCars: FC<IPainCars> = ({ mapBounds, carsDataStart }) => {
     dispatch(carsMapActions.setCarsFilterMarkers(makeFilterObject(carsDataStart.cars)))
   }, [carsDataStart, dispatch])
 
-  // // Подписываемся на событие изменения масштаба
-  // useLayoutEffect(() => {
-  //   map.on('zoom', updateMapWhenNoUser);
-  //   map.on('moveend', updateMapWhenNoUser);
-
-  //   // Отписываемся от события при размонтировании компонента
-  //   return () => {
-  //     map.off('zoom', updateMapWhenNoUser);
-  //     map.off('moveend', updateMapWhenNoUser);
-  //   };
-  // }, [map, updateMapWhenNoUser]);
-
-
 
   // Смещение карты при первой загрузке на велечину тултипа
   useEffect(() => {
     map.whenReady(() => {
-      if (isMobile) map.zoomOut()
-      map.panBy([0, 28], { animate: true });
+      // if (isMobile)
+      // map.zoomOut()
+      map.fitBounds(mapBounds)
+      const zoomOut: HTMLButtonElement | null = document.querySelector('.leaflet-control-zoom-out')
+      setTimeout(() => {
+        zoomOut?.click()
+      }, 300)
     })
-  }, [map])
+
+    return () => {
+      const menuElement = document.querySelector('[aria-label="Map settings"]')?.closest('.leaflet-control');
+      menuElement?.remove()
+    }
+  }, [])
 
   return (
-    <>
-      {companyData &&
+    <div>
 
-        <CustomLayerControl menuHeaderData={menuHeaderData} key={menuHeaderData.company_id}>
+      <CarsLayerControl key={menuHeaderData.company_id} />
 
-          {carsForMenuFromStore && carsForMenuFromStore.map((carData) =>
-            (<MenuItemCar carData={carData} key={`menuItem` + carData.car_id}></MenuItemCar>)
-          )}
-
-        </CustomLayerControl>}
-      {/* <TestControl></TestControl> */}
-    <Pane name="myPane" style={{ zIndex: 500, width: '100vh', }}>
-
+      <Pane name="carsMapPane" style={{ zIndex: 500, width: '100vh', }}>
         {companyData && filterForMarkers.map((el: any) => {
           return <MarkerCar car={el} key={`${el.car_id}-${el.last_track}`} />
         }
         )}
+      </Pane>
 
-    </Pane>
-    </>
+      <Pane name="historyIconTooltipsPane" style={{ zIndex: 700, width: '100vh', }}>
+      </Pane>
+    </div>
   )
 }
 

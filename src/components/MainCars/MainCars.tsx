@@ -1,54 +1,75 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+// import { useLocation } from 'react-router-dom';
+
 import { MapContainer, TileLayer, ZoomControl } from 'react-leaflet';
-
-import { Box, Stack, CircularProgress } from '@mui/material';
-
-import L from 'leaflet';
 import 'leaflet-rotatedmarker';
+import L from 'leaflet';
 
-import PainCars from './PainCars';
+import { useAppDispatch, useAppSelector, dataActions } from '../../store';
 import getCarsFetch from './lib/fetchGetCars';
-import style from './style.module.css'
 
 import { ICarObject, ICompanyData } from '../../types/carsTypes';
 
-export default function MainCars() {
+import { Box } from '@mui/material';
+import { Spinner } from '../HistoryComponents/IconComponent/Spinner';
+import PainCars from './PainCars';
+import PaneHistoryMap from '../HistoryComponents/PaneHistoryMap';
+
+
+
+function MainCars() {
 
   const [carsBounds, setCarsBounds] = useState<L.LatLngBoundsExpression | [] | any>()
   const [companyData, setCompanyData] = useState<ICompanyData | undefined>()
+  const carsMapVariant = useAppSelector((state) => state.carsMap.carsMapConfig.variant);
 
-  //TODO Сделать проверку полученных первых данных и получаемых ежесекундно данных в <PainCars> 
+  const mapRef = useRef<L.Map | null>(null)
+  const dispatch = useAppDispatch()
+
+  //TODO Сделать проверку полученных первых данных и получаемых ежесекундно данных в <PainCars>
   // на вероятность добавления данных о новом авто или исчезновении данных об авто
   // Если данные не соответсвуют(расходятся) то сделалть перерендер <MainCars> с новой отрисовкой всех
   // компонентов
+
   useEffect(() => {
-    const companyData = getCarsFetch()
-    companyData
-      .then((data) => {
-        const carBoundsArray = data.cars.map((car: ICarObject) => {
-        return [parseFloat(String(car.lat)), parseFloat(String(car.lng))]
-      })
-        setCompanyData(data)
-        L.control.zoom({ position: 'topright' })
+    if (carsMapVariant === 'all') {
 
-      return setCarsBounds(carBoundsArray)
-      })
-      .catch((e) => console.log("Ошибка приполучении данных с сервера", e)
-    )
+      const abortController = new AbortController();
+      const companyData = getCarsFetch(abortController)
+      companyData
+        .then((data) => {
+          const carBoundsArray = data.cars.map((car: ICarObject) => {
+            return [parseFloat(String(car.lat)), parseFloat(String(car.lng))]
+          })
+          setCompanyData(data)
+          // L.control.zoom({ position: 'topright' })
 
-  }, [])
+          return setCarsBounds(carBoundsArray)
+        })
+        .catch((e) => console.log("Ошибка приполучении данных с сервера", e)
+        )
+
+      // Очищаем store data 
+      dispatch(dataActions.reset())
+      return () => abortController.abort();
+    }
+
+  },
+
+    [carsMapVariant, dispatch])
+
+  // useEffect(() => {
+  //   if (mapRef.current) {
+  //     mapRef.current.remove();
+  //   }
+  // }, []);
 
   return !carsBounds ?
-    (<Box display="flex" width="100%" height="100vh">
-        <Stack display={'flex'} justifyContent={'center'} alignItems={'center'} margin={'auto'}>
-
-          <CircularProgress color="inherit" className={style.carSpinner} />
-        </Stack>
-    </Box>)
-        :
-
+    (<Spinner />)
+    :
     (<Box display="flex" width="100%" height="100vh">
         <MapContainer
+        ref={mapRef}
           // whenReady={() => { console.log("MAP READY") }}
           zoomSnap={0.5}
           zoomDelta={0.5}
@@ -61,13 +82,21 @@ export default function MainCars() {
         zoomControl={false}
         style={{ width: '100%', height: '100%' }}
       >
-        <ZoomControl position="topleft" />
+        <ZoomControl position="topleft"
+
+        />
           <TileLayer
             attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"
         />
-        <PainCars mapBounds={carsBounds} carsDataStart={companyData} />
+
+        {String(carsMapVariant) === 'all' && <PainCars mapBounds={carsBounds} carsDataStart={companyData} />}
+
+        {String(carsMapVariant) === 'history' && <PaneHistoryMap />}
+
         </MapContainer>
     </Box>)
 
 }
+
+export default MainCars;

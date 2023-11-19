@@ -1,21 +1,38 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { IDataAllCarsForMenu, ICompanyData, IOneCarForMenu, ICompanyName, ICarsFilter } from "../../types/carsTypes";
+import carsPageconfig from '../../components/MainCars/lib/config';
+import { TDataAboutCarForHistoryMenu, ICompanyData, IOneCarForMenu, ICompanyName, ICarsFilter, IDataFromDateForm } from "../../types/carsTypes";
 
 type TypeCarsFilter = { [key: number]: boolean } | null;
 
-type TypeInitialState = {
+type TypeCarsMapConfig = {
+  variant: 'all' | 'history',
+  userTimeOffset?: string,
+}
+// type TCarMapItem = {
+//   car_id: string | number,
+//   carName: string,
+//   dataFromIso: string | '',
+//   dataToIso: string | '',
+//   localOffset: number,
+// }
+
+interface TypeInitialState {
   companyName: ICompanyName | null,
   forMenu: IOneCarForMenu[] | null | undefined,
   carsFilter: TypeCarsFilter,
   isConnectFilter: TypeCarsFilter,
+  carsMapConfig: TypeCarsMapConfig,
+  carsItemFromHistoryForm: TDataAboutCarForHistoryMenu | null
 }
 
-const initialState: TypeInitialState = {
 
+const initialState: TypeInitialState = {
   companyName: null,
   forMenu: null,
   carsFilter: null,
   isConnectFilter: null,
+  carsMapConfig: { variant: 'all', userTimeOffset: carsPageconfig.defaultTimeLocaloffset },
+  carsItemFromHistoryForm: null
 }
 
 export const carsMapSlice = createSlice({
@@ -46,12 +63,15 @@ export const carsMapSlice = createSlice({
       state.isConnectFilter = { ...state.isConnectFilter, ...action.payload }
       // return state
     },
+    setCarsMapConfig: (state: any, action: PayloadAction<TypeCarsMapConfig>) => {
+      state.carsMapConfig = { ...state.carsMapConfig, ...action.payload }
+      // return state
+    },
+    setCarsItemFromHistoryForm: (state: any, action: PayloadAction<TDataAboutCarForHistoryMenu>) => {
+      state.carsItemFromHistoryForm = { ...state.carsItemFromHistoryForm, ...action.payload }
+      // return state
+    },
   }
 })
 
 export const { actions: carsMapActions, reducer: carsMapReducer } = carsMapSlice;
-// // Два export !!
-// export default carsMapSlice.reducer
-
-// // Экспортируем экшены
-// export const { setCarsData } = carsMapSlice.actions
