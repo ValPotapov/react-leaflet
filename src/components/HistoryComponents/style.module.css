@@ -21,11 +21,26 @@
   margin-left: 1px;
   margin-top: 10px;
   /* border: 1px solid black; */
-  border: 2px solid;
-  border-color: rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(0, 0, 0, 0.3);
 }
 
 .menuIconButton:hover {
+  /* cursor: pointer; */
+  background-color: #F4F4F4;
+  opacity: 0.8;
+}
+.menuIconButton.cars_history_map {
+  /* cursor: pointer; */
+  background-color: #ffffff;
+  padding: 4px;
+  border-radius: 4px;
+  margin-left: 1px;
+  margin-top: 10px;
+  /* border: 1px solid black; */
+  border: 2px solid rgba(0, 0, 0, 0.3);
+}
+
+.menuIconButton.cars_history_map:hover {
   /* cursor: pointer; */
   background-color: #F4F4F4;
   opacity: 0.8;

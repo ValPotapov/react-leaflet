@@ -218,14 +218,19 @@ const PaneHistoryMap = () => {
   // Удаляем Control
   useEffect(() => {
     return () => {
-
-      // Удаляем кнопки control
-      const backElement = document.querySelector('[aria-label="Back"]')?.closest('.leaflet-control');
-      const historyElement = document.querySelector('[aria-label="History"]')?.closest('.leaflet-control');
-      backElement?.remove()
-      historyElement?.remove()
+      try {
+        // Удаляем кнопки control
+        const backElement = document.querySelector('[aria-label="Back"]')?.closest('.leaflet-control');
+        const historyElement = document.querySelector('[aria-label="History"]')?.closest('.leaflet-control');
+        backElement?.remove()
+        historyElement?.remove()
       // polilineRef.current?.remove()
       // polilineRef.current = null
+      } catch (error) {
+        console.warn("Не удалось удалить control", error);
+
+      }
+
     }
   }, [map, carsItemFromHistoryForm]);
 

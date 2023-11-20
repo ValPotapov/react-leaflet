@@ -11,28 +11,16 @@ import { TextField } from '@mui/material/';
 import { IconHistory } from './IconComponent/IconHistory';
 import { IconCar } from './IconComponent/IconCar';
 
-import style from './style.module.css'
 
 interface IHistoryMenuProps {
-  carData: TDataAboutCarForHistoryMenu
+  carData: TDataAboutCarForHistoryMenu,
+  className?: string,
 }
 
 
-const HistoryMenu: FC<IHistoryMenuProps> = ({ carData }) => {
+const HistoryMenu: FC<IHistoryMenuProps> = ({ carData, className }) => {
 
   const dispatch = useAppDispatch()
-  // const parcId = useAppSelector((store) => store.carsMap.companyName?.company_id)
-  // console.log("DateTime.local()", DateTime.local());
-  // console.log("DateTime.local().toISO()", DateTime.local().toISO());
-  // console.log("DateTime.local().toISO()", DateTime.local().toISO());
-  // console.log("DateTime.now().toUnixInteger()", DateTime.now().toUnixInteger());
-  // console.log("DateTime.local().toISO().slice", DateTime.local().toISO()?.slice(0, 16));
-  // console.log("DateTime.local().toMillis", DateTime.local().toMillis());
-  // console.log("DateTime.local().startOf", DateTime.local().startOf('day'));
-  // console.log("DateTime.local().startOf().toISO() Midnight", DateTime.local().startOf('day').toISO()?.slice(0, 16));
-  // console.log("DateTime.local().startOf().toMillis()", DateTime.local().startOf('day').toMillis());
-  // console.log("DateTime.local().offset", DateTime.local().offset);
-  // console.log("DateTime.fromISO .toMillis()", DateTime.fromISO('2023-11-12T15:00').toMillis());
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -102,7 +90,6 @@ const HistoryMenu: FC<IHistoryMenuProps> = ({ carData }) => {
   const textField_from = () => {
     return (
 
-
       <TextField
         name="dateFrom"
         label="Дата от"
@@ -139,14 +126,15 @@ const HistoryMenu: FC<IHistoryMenuProps> = ({ carData }) => {
 
     <div>
       <IconButton
+        aria-label={'History'}
         onClick={handleClick}
         size="small"
         aria-controls={open ? 'account-menu' : undefined}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
-        className={style.menuIcon} sx={{ width: 20, height: 20 }}
+        className={className}
       >
-        <IconHistory />
+        <IconHistory sx={{ width: 20, height: 20 }} />
       </IconButton>
 
       <Menu

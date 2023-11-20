@@ -1,22 +1,16 @@
-import React, { useState } from 'react'
 import Control from 'react-leaflet-custom-control'
 
 import { useAppSelector } from '../../store';
 
-import { Tooltip, IconButton } from '@mui/material';
+import { Tooltip } from '@mui/material';
 import HistoryMenu from './HistoryMenu';
 
 import style from './style.module.css'
-
 const HistoryLayerControl = () => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const dataFromDateForm = useAppSelector((state) => state.carsMap.carsItemFromHistoryForm);
-  const open = Boolean(anchorEl);
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
+
   const newDataFromDateForm = {
     ...dataFromDateForm,
     company_id: dataFromDateForm?.company_id || '0',
@@ -29,31 +23,19 @@ const HistoryLayerControl = () => {
 
   }
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
   return (
-    <div>
-      <Control position='topleft' prepend={false} >
+    <>
+      <Control position='topleft' prepend={false}>
         <Tooltip title="History">
-          <IconButton
-            onClick={handleClick}
-            size="small"
-            sx={{ ml: 2 }}
-            aria-controls={open ? 'History-menu' : undefined}
-            aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}
-            className={style.menuIconButton}
-          >
-            {dataFromDateForm &&
-              <HistoryMenu carData={newDataFromDateForm}></HistoryMenu>
-            }
-          </IconButton>
+          <>
+            <HistoryMenu
+              carData={newDataFromDateForm}
+              className={[style.menuIconButton, style.cars_history_map].join(' ')} />
+          </>
         </Tooltip>
       </Control>
 
-    </div>
+    </>
   );
 }
 

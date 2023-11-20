@@ -22,10 +22,12 @@ const BackLayerControl = () => {
 
 
   return (
-    <div>
+    <>
       <Control position='topleft' prepend={false} >
         <Tooltip title="Back">
+          <>
           <IconButton
+              aria-label={'Back'}
             onClick={handleClick}
             size="small"
             sx={{ ml: 2 }}
@@ -33,12 +35,13 @@ const BackLayerControl = () => {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
             className={style.menuIconButton}
-          >
-            <ArrowBackIcon className={style.menuIcon} sx={{ width: 20, height: 20 }} />
+            >
+              <ArrowBackIcon sx={{ width: 20, height: 20 }} />
           </IconButton>
+          </>
         </Tooltip>
       </Control>
-    </div>
+    </>
   );
 }
 
