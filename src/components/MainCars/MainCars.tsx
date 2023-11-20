@@ -19,7 +19,7 @@ import PaneHistoryMap from '../HistoryComponents/PaneHistoryMap';
 
 function MainCars() {
 
-  const [carsBounds, setCarsBounds] = useState<L.LatLngBoundsExpression | [] | any>()
+  const [carsBounds, setCarsBounds] = useState<L.LatLngBoundsExpression | [] | any>(null)
   const [companyData, setCompanyData] = useState<ICompanyData | undefined>()
   const carsMapVariant = useAppSelector((state) => state.carsMap.carsMapConfig.variant);
 
@@ -82,16 +82,13 @@ function MainCars() {
         zoomControl={false}
         style={{ width: '100%', height: '100%' }}
       >
-        <ZoomControl position="topleft"
-
-        />
+        <ZoomControl position="topleft" />
           <TileLayer
             attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"
         />
 
         {String(carsMapVariant) === 'all' && <PainCars mapBounds={carsBounds} carsDataStart={companyData} />}
-
         {String(carsMapVariant) === 'history' && <PaneHistoryMap />}
 
         </MapContainer>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, FC } from 'react';
+import { DateTime } from "luxon";
 
 import { Pane, useMap } from 'react-leaflet';
 import 'leaflet-rotatedmarker';
@@ -9,7 +10,7 @@ import getCarsFetch from './lib/fetchGetCars';
 import isHasToushScreen from './lib/isMobile';
 import carsPageconfig from './lib/config';
 
-import { ICarObject, ICompanyData, ICompanyName } from '../../types/carsTypes';
+import { ICarObject, ICompanyData, ICompanyName, TDataAboutCarForHistoryMenu } from '../../types/carsTypes';
 
 import MarkerCar from './MarkerCar';
 import CarsLayerControl from '../MenuCars/CarsLayerControl';
@@ -53,8 +54,8 @@ const PainCars: FC<IPainCars> = ({ mapBounds, carsDataStart }) => {
     return dataCarsForMenuItems;
   };
 
-  // Фильтр для передачи в Marker (принимает маасив объектов Cars и возвращает все где checked true)
 
+  // Фильтр для передачи в Marker (принимает маасив объектов Cars и возвращает все где checked true)
   const filterForMarkers = dataCarsForMarrkers.filter((el: ICarObject) => {
     if (carsFilterObject && carsFilterObject[el.car_id] === true) return el
   })
@@ -70,6 +71,25 @@ const PainCars: FC<IPainCars> = ({ mapBounds, carsDataStart }) => {
 
   // Данные для меню 
   const dataForMenuItem = useMemo(() => getdataForMenuItem(companyData), [carsDataStart])
+
+  // Данные авто для HistoryMenu
+  // Создаем объект с данными об авто для передачи в HistoryMenu
+  const getDataAboutCarForHistory = (carObject: ICarObject) => {
+    const dataAboutCar: TDataAboutCarForHistoryMenu = {
+      company_id: companyData.company_id,
+      company_name: companyData.company_name || 'noname',
+      car_id: carObject.car_id,
+      car_name: carObject.car_name,
+      // полночь по местному
+      dataFromIso: DateTime.local().startOf('day').toISO()?.slice(0, 16) || '',
+      // местное время
+      dataToIso: DateTime.local().toISO()?.slice(0, 16) || '',
+      // местное смещение часовогот пояса в минутах
+      localOffset: carsPageconfig.defaultTimeLocaloffset,
+    }
+
+    return dataAboutCar
+  }
 
   // Получение данных с сервера
   useEffect(() => {
@@ -120,7 +140,10 @@ const PainCars: FC<IPainCars> = ({ mapBounds, carsDataStart }) => {
 
       <Pane name="carsMapPane" style={{ zIndex: 500, width: '100vh', }}>
         {companyData && filterForMarkers.map((el: any) => {
-          return <MarkerCar car={el} key={`${el.car_id}-${el.last_track}`} />
+          return <MarkerCar
+            car={el}
+            dataForHistory={getDataAboutCarForHistory(el)}
+            key={`${el.car_id}-${el.last_track}`} />
         }
         )}
       </Pane>
