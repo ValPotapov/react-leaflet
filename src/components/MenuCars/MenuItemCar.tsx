@@ -11,7 +11,6 @@ interface IMenuItems {
 }
 
 const MenuItemCar: FC<IMenuItems> = React.memo(() => {
-  console.log("---Render Checkbox");
 
   const dispatch = useAppDispatch()
   const carsForMenuFromStore = useAppSelector((state) => state.carsMap?.forMenu);
