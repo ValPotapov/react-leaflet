@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector, dataActions } from '../../store';
 import getCarsFetch from './lib/fetchGetCars';
 
 import { ICarObject, ICompanyData } from '../../types/carsTypes';
+import carsPageconfig from './lib/config';
 
 import { Box } from '@mui/material';
 import { Spinner } from '../HistoryComponents/IconComponent/Spinner';
@@ -50,7 +51,9 @@ function MainCars() {
         )
 
       // Очищаем store data 
-      dispatch(dataActions.reset())
+      if (carsPageconfig.storeReset) {
+        dispatch(dataActions.reset())
+      }
       return () => abortController.abort();
     }
 

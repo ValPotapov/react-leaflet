@@ -47,21 +47,10 @@ const MarkerCar: FC<CarProps> = ({ car, dataForHistory }) => {
 
   function timeDifference(dateString: string) {
     // Получаем время (с сервера) в миллисекундах по UTC (last_track: "2023-11-19 13:45:10")
-    const timeLastTrack = DateTime.fromFormat(dateString, "yyyy-MM-dd HH:mm:ss").toUTC()
+    const timeLastTrack = DateTime.fromFormat(dateString, "yyyy-MM-dd HH:mm:ss", { zone: carsPageconfig.defaultTimeLocaloffset }).toUTC()
     const timeLocalNow = DateTime.now().toUTC()
-    const different = timeLocalNow < timeLastTrack.plus({ hour: carsPageconfig.differentTime })
-    // console.log("---------2--------");
-    // console.log(date);
-    // console.log(DateTime.fromISO(date));
-
-    const timeLastTrackMillis = DateTime.fromFormat(dateString, "yyyy-MM-dd HH:mm:ss").toUTC().toMillis();
-    // Получаем текущее время в миллисекундах по UTC
-    const timeLocalNowMillis = DateTime.now().toUTC().toMillis()
-    // const lastTrack = new Date(dateString)
-    const dif = timeLocalNowMillis - timeLastTrackMillis
-    const oneHour = carsPageconfig.differentTime // Значение в config.js
-
-    return different // Если с последнего track прошло меньше [часа] - true иначе false
+    const different: number = timeLocalNow.diff(timeLastTrack, 'hours').hours; // Разница в часах
+    return different < carsPageconfig.differentTime// Если с последнего track прошло меньше [часа] - true иначе false
   }
 
   // Обработка событий мыши на маркере
