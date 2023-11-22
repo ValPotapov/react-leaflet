@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector, carsMapActions } from '../../store';
 import getCarsFetch from './lib/fetchGetCars';
 import isHasToushScreen from './lib/isMobile';
 import carsPageconfig from './lib/config';
+import zoomOutHandler from './lib/zoomOut';
 
 import { ICarObject, ICompanyData, ICompanyName, TDataAboutCarForHistoryMenu } from '../../types/carsTypes';
 
@@ -121,14 +122,12 @@ const PainCars: FC<IPainCars> = ({ mapBounds, carsDataStart }) => {
       // if (isMobile)
       // map.zoomOut()
       map.fitBounds(mapBounds)
-      const zoomOut: HTMLButtonElement | null = document.querySelector('.leaflet-control-zoom-out')
-      setTimeout(() => {
-        zoomOut?.click()
-      }, 300)
+      zoomOutHandler(map)
+      // const zoomOut: HTMLButtonElement | null = document.querySelector('.leaflet-control-zoom-out')
     })
 
     return () => {
-      const menuElement = document.querySelector('[aria-label="Map settings"]')?.closest('.leaflet-control');
+      const menuElement = document.querySelector('[data-control="cars-menu"]')?.closest('.leaflet-control');
       menuElement?.remove()
     }
   }, [])

@@ -6,9 +6,9 @@ import carsPageconfig from '../MainCars/lib/config';
 
 import { TDataAboutCarForHistoryMenu } from '../../types/carsTypes';
 
-import { IconButton, Menu, Typography, Divider, Stack, Button } from '@mui/material/';
+import { Menu, Typography, Divider, Stack, Button, Fab } from '@mui/material/';
+import RestoreIcon from '@mui/icons-material/Restore';
 import { TextField } from '@mui/material/';
-import { IconHistory } from './IconComponent/IconHistory';
 import { IconCar } from './IconComponent/IconCar';
 
 
@@ -122,20 +122,30 @@ const HistoryMenu: FC<IHistoryMenuProps> = ({ carData, className }) => {
     )
   }
 
+  const zoomStyle = {
+    backgroundColor: 'rgb(7, 140, 117)',
+    color: 'white',
+    '&:hover': {
+      backgroundColor: '#28c8aa'
+    }
+  }
+
   return (
 
     <div>
-      <IconButton
+      <Fab
         aria-label={'History'}
         onClick={handleClick}
         size="small"
         aria-controls={open ? 'account-menu' : undefined}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
-        className={className}
+        // className={className}
+        data-control={'control-history'}
+        sx={zoomStyle} 
       >
-        <IconHistory sx={{ width: 20, height: 20 }} />
-      </IconButton>
+        <RestoreIcon />
+      </Fab>
 
       <Menu
         anchorEl={anchorEl}

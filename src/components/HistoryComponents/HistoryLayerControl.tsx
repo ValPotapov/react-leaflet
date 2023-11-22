@@ -30,7 +30,8 @@ const HistoryLayerControl = () => {
           <>
             <HistoryMenu
               carData={newDataFromDateForm}
-              className={[style.menuIconButton, style.cars_history_map].join(' ')} />
+              className={[style.menuIconButton, style.cars_history_map].join(' ')}
+            />
           </>
         </Tooltip>
       </Control>

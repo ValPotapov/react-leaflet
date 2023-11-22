@@ -113,7 +113,7 @@ const MarkerCar: FC<CarProps> = ({ car, dataForHistory }) => {
     const tooltipHistory = L.tooltip({
       pane: 'historyIconTooltipsPane',
       direction: 'left',
-      className: [style.leafBorder, style.historyTooltip].join(' '),
+      // className: [style.leafBorder, style.historyTooltip].join(' '),
       offset: [-10, -10],
       interactive: true,
       permanent: true

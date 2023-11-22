@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo, FC } from 'react';
-import ReactDOMServer, { render } from 'react-dom';
 
-
-import { useMap, Tooltip } from 'react-leaflet';
+import { useMap, Popup } from 'react-leaflet';
 import { Marker as PointMarker } from 'react-leaflet';
 import 'leaflet-rotatedmarker';
 import L from 'leaflet';
+
+import { Divider } from '@mui/material';
 
 import carsPageconfig from '../MainCars/lib/config';
 import isHasToushScreen from '../MainCars/lib/isMobile';
@@ -39,10 +39,11 @@ const LayersHistoryMarkers: FC<TLayerHistoryMarkersProps> = ({ historyFromServer
 
   const createPointIcon = () => {
     return new L.DivIcon({
-      className: 'custom-point-icon',
+      // className: style.customPointIcon,
       html: `<svg width="${iconRadius * 4}" height="${iconRadius * 4}"><circle cx="${iconRadius}" cy="${iconRadius}" r="${iconRadius}" fill="red" /></svg>`,
       // iconSize: [8, 8],
-      iconAnchor: [iconRadius, iconRadius]
+      iconAnchor: [iconRadius, iconRadius],
+      // pane: 'historyPoint'
 
     });
   };
@@ -50,23 +51,20 @@ const LayersHistoryMarkers: FC<TLayerHistoryMarkersProps> = ({ historyFromServer
 
   return (
     <PointMarker
-      pane={"historyMapPane"}
+      pane={"historyMarkerPane"}
       position={[Number(historyFromServer.lat), Number(historyFromServer.lng)]}
       icon={createPointIcon()
       }
     // riseOnHover
     >
-      {/* <Tooltip
-        pane='historyMapPane'
-        eventHandlers={{
-          // add: () => onLoadTooltip()
+      <Popup>
+        <div>
+          <p>Время :  {historyFromServer.timestamp}</p>
+          <Divider />
 
-        }}
-        // permanent={true}
-        direction="top" opacity={1}
-      >
-        {historyFromServer.timestamp}
-      </Tooltip> */}
+          <p>Скорость :  {historyFromServer.speed}</p>
+        </div>
+      </Popup>
     </PointMarker>
   )
 }

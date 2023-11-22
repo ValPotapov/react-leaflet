@@ -1,12 +1,12 @@
 import React, { useState, FC } from 'react'
-import { useAppDispatch, useAppSelector, carsMapActions } from '../../store';
+import { useAppSelector } from '../../store';
 
 import L from 'leaflet';
 import Control from 'react-leaflet-custom-control'
 
 import style from './style.module.css'
 
-import { Menu, Stack, Tooltip, IconButton } from '@mui/material';
+import { Menu, Stack, Tooltip, Fab } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import MenuItemCar from './MenuItemCar';
 
@@ -29,21 +29,30 @@ const CarsLayerControl: FC<ICustomLayerControl> = () => {
     setAnchorEl(null);
   };
 
+  const controlStyle = {
+    backgroundColor: 'rgb(7, 140, 117)',
+    color: 'white',
+    '&:hover': {
+      backgroundColor: '#28c8aa'
+    }
+  }
+
   return (
     <div>
       <Control position='topleft' prepend={false} >
         <Tooltip title="Map settings">
-          <IconButton
+          <Fab
             onClick={handleClick}
             size="small"
-            sx={{ ml: 2 }}
+            sx={controlStyle}
             aria-controls={open ? 'map-menu' : undefined}
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
-            className={style.menuIconButton}
+            // className={style.menuIconButton}
+            data-control={'cars-menu'}
           >
-            <MenuIcon sx={{ width: 20, height: 20 }} />
-          </IconButton>
+            <MenuIcon />
+          </Fab>
         </Tooltip>
       </Control>
 

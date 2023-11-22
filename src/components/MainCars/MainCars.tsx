@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 // import { useLocation } from 'react-router-dom';
 
-import { MapContainer, TileLayer, ZoomControl } from 'react-leaflet';
+import { MapContainer, TileLayer } from 'react-leaflet';
 import 'leaflet-rotatedmarker';
 import L from 'leaflet';
 
@@ -15,8 +15,7 @@ import { Box } from '@mui/material';
 import { Spinner } from '../HistoryComponents/IconComponent/Spinner';
 import PainCars from './PainCars';
 import PaneHistoryMap from '../HistoryComponents/PaneHistoryMap';
-
-
+import CustomZoom from './CustomZoom';
 
 function MainCars() {
 
@@ -61,12 +60,6 @@ function MainCars() {
 
     [carsMapVariant, dispatch])
 
-  // useEffect(() => {
-  //   if (mapRef.current) {
-  //     mapRef.current.remove();
-  //   }
-  // }, []);
-
   return !carsBounds ?
     (<Spinner />)
     :
@@ -85,7 +78,8 @@ function MainCars() {
         zoomControl={false}
         style={{ width: '100%', height: '100%' }}
       >
-        <ZoomControl position="topleft" />
+        {/* <ZoomControl position="topleft" /> */}
+        <CustomZoom />
           <TileLayer
             attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"

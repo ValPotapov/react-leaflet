@@ -9,6 +9,7 @@ import { useAppSelector } from '../../store';
 import getHistoryFetch from './lib/getHistoryFetch';
 import isHasToushScreen from '../MainCars/lib/isMobile';
 import carsPageconfig from '../MainCars/lib/config';
+import zoomOutHandler from '../MainCars/lib/zoomOut';
 
 import { TDataAboutCarForHistoryMenu, IHistoryDataFromServer, IHistoryPoints, IHistoryCar } from '../../types/carsTypes';
 
@@ -110,6 +111,7 @@ const PaneHistoryMap = () => {
           color: 'red',
           weight: carsPageconfig.historyLineWeight,
           lineCap: 'square',
+          pane: 'historyMapPane-line',
           // dashArray: '20, 5' // пунктир
         })
         polilineRef.current = polyline
@@ -166,7 +168,6 @@ const PaneHistoryMap = () => {
   useEffect(() => {
     if (carsItemFromHistoryForm) {
       historyFetchHandler(carsItemFromHistoryForm)
-
     }
     return () => {
       polilineRef.current?.remove()
@@ -175,62 +176,50 @@ const PaneHistoryMap = () => {
     }
   }, [carsItemFromHistoryForm])
 
-
-
-  // Когда(если) обновился state forFitBounds
   useEffect(() => {
     // После отрисовки всех компонентов истории
     map.whenReady(() => {
       if (forFitBounds && forFitBounds.length > 0) {
           // map.fitBounds(forFitBounds)
-          map.options.zoomSnap = 0.5
-          map.options.zoomDelta = 0.5
+        // map.options.zoomSnap = 0.5
+        // map.options.zoomDelta = 0.5
         // console.log("Zoom Min", map.getMinZoom());
         // console.log("Zoom Max", map.getMaxZoom());
         // console.log("getBoundsZoom", map.getBoundsZoom(forFitBounds));
         //   console.log("getCenter()", map.getCenter());
-
         map.fitBounds(forFitBounds)
+        zoomOutHandler(map)
         // map.setView(map.getCenter())
-          // map.setZoom(9.5)
+        // map.setZoom(9.5)
         // map.zoomOut(-1)
         // map.setZoomAround(map.getCenter(), 9.5)
-        const zoomOut: HTMLButtonElement | null = document.querySelector('.leaflet-control-zoom-out')
+        // const zoomOut: HTMLButtonElement | null = document.querySelector('.leaflet-control-zoom-out')
+
         setTimeout(() => {
-          zoomOut?.click()
+          // zoomOut?.click()
           setHistoryDataLoad(true)
         }, 300)
+        // Добавляем линии на карту
         polilineRef.current?.addTo(map)
-
       }
-
     })
 
   }, [forFitBounds])
-
-  // map.on('zoom', function () {
-  //   const carMapZoom = map.getZoom()
-  //   console.log('Zoom', map.getZoom());
-  //   if (carMapZoom > 16) carsPageconfig.historyMarkerRadius = 6
-  // });
-
 
   // Удаляем Control
   useEffect(() => {
     return () => {
       try {
-        // Удаляем кнопки control
-        const backElement = document.querySelector('[aria-label="Back"]')?.closest('.leaflet-control');
-        const historyElement = document.querySelector('[aria-label="History"]')?.closest('.leaflet-control');
+        // Удаляем кнопки control  
+        // const backElement = document.querySelector('[aria-label="Back"]')?.closest('.leaflet-control');
+        // const historyElement = document.querySelector('[aria-label="History"]')?.closest('.leaflet-control');
+        const backElement = document.querySelector('[data-control="control-back"]')?.closest('.leaflet-control');
+        const historyElement = document.querySelector('[data-control="control-history"]')?.closest('.leaflet-control');
         backElement?.remove()
         historyElement?.remove()
-      // polilineRef.current?.remove()
-      // polilineRef.current = null
       } catch (error) {
         console.warn("Не удалось удалить control", error);
-
       }
-
     }
   }, [map, carsItemFromHistoryForm]);
 
@@ -250,13 +239,14 @@ const PaneHistoryMap = () => {
         ))}
       </LayerGroup>
 
-      <Pane name="historyMapPane" style={{ zIndex: 300, width: '100vh', }}>
-        <LayerGroup pane='historyMapPane'>
+        <Pane name="historyMarkerPane" style={{ zIndex: 500, width: '100vh', }}></Pane>
+        {/* <LayerGroup> */}
             {dataFromServer?.history.length! > 0 && dataFromServer?.history.map((historyItem) => (
             <LayersHistoryMarkers key={uuidv4()} historyFromServer={historyItem}></LayersHistoryMarkers>
           ))}
-        </LayerGroup>
-      </Pane>
+        {/* </LayerGroup> */}
+
+        <Pane name='historyMapPane-line' style={{ width: '100vh', }}></Pane>
       </>
 
     </div>
@@ -264,8 +254,3 @@ const PaneHistoryMap = () => {
 }
 
 export default PaneHistoryMap;
-
-// lat: "53.882645"
-// lng: "27.5217466"
-// name: "home"
-// radius: "100"
