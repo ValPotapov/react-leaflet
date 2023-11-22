@@ -221,8 +221,9 @@ const HistoryMenu: FC<IHistoryMenuProps> = ({ carData, className }) => {
             <Stack>
               <Button
                 disabled={!validDateCompare} type="submit"
-                variant="outlined"
-                style={{ width: '60%', margin: 'auto' }}>Показать
+                // variant="outlined"
+                variant="contained"
+                style={{ width: '60%', margin: 'auto', backgroundColor: 'rgb(7, 140, 117)' }}>Показать
               </Button>
             </Stack>
           </form>
