@@ -26,6 +26,7 @@ const PainCars: FC<IPainCars> = ({ mapBounds, carsDataStart }) => {
   const carsFilterObject = useAppSelector((state) => state.carsMap.carsFilter);
 
   const [companyData, setCompanyData] = useState<ICompanyData>(carsDataStart)
+
   const isMobile = useMemo(() => isHasToushScreen(), [])// mobile -> true ? PC -> false
   const map = useMap();
 
@@ -46,7 +47,7 @@ const PainCars: FC<IPainCars> = ({ mapBounds, carsDataStart }) => {
   const getdataForMenuItem = (company: ICompanyData) => {
 
     const dataCarsForMenuItems = company.cars.map((car: ICarObject) => ({
-      car_id: car.car_id,
+      car_id: String(car.car_id),
       car_name: car.car_name,
       checked: true,
       disconnect: false,
@@ -58,7 +59,7 @@ const PainCars: FC<IPainCars> = ({ mapBounds, carsDataStart }) => {
 
   // Фильтр для передачи в Marker (принимает маасив объектов Cars и возвращает все где checked true)
   const filterForMarkers = dataCarsForMarrkers.filter((el: ICarObject) => {
-    if (carsFilterObject && carsFilterObject[el.car_id] === true) return el
+    if (carsFilterObject && carsFilterObject[Number(el.car_id)] === true) return el
   })
 
   const makeFilterObject = (carsData: any) => {
@@ -105,7 +106,7 @@ const PainCars: FC<IPainCars> = ({ mapBounds, carsDataStart }) => {
 
     return () => {
       clearInterval(interval)
-      abortController.abort();
+      // abortController.abort();
     };
   }, [map, mapBounds]);
 
@@ -121,8 +122,14 @@ const PainCars: FC<IPainCars> = ({ mapBounds, carsDataStart }) => {
     map.whenReady(() => {
       // if (isMobile)
       // map.zoomOut()
-      map.fitBounds(mapBounds)
-      zoomOutHandler(map)
+      try {
+        map.fitBounds(mapBounds)
+        zoomOutHandler(map)
+      } catch (error) {
+        console.warn("Ошибка В PainCars map.fitBounds-->", error);
+
+      }
+
       // const zoomOut: HTMLButtonElement | null = document.querySelector('.leaflet-control-zoom-out')
     })
 

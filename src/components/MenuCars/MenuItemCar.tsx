@@ -50,7 +50,7 @@ const MenuItemCar: FC<IMenuItems> = React.memo(() => {
         <Box className={style.menuDisconnectBox}>
           <IconDisconnect
             color={'black'}
-              className={!carsIsConnectFilter[carItem.car_id] ? style.menuDisconnectIcon : style.menuIconNoneVisible}
+              className={!carsIsConnectFilter[Number(carItem.car_id)] ? style.menuDisconnectIcon : style.menuIconNoneVisible}
           ></IconDisconnect>
         </Box>
       }

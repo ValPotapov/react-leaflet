@@ -7,15 +7,15 @@ export interface ICompanyData {
 
 // Объект car приходит с сервера
 export type ICarObject = {
-  car_id: number,
+  car_id: string,
   car_name: string,
-  lat: string | number,
-  lng: string | number,
-  angle: string | number,
-  altitude: string | number,
+  lat: string,
+  lng: string,
+  angle: string,
+  altitude: string,
   speed: string,
   pic: string,
-  last_track: string | number
+  last_track: string
 }
 // Для store
 export type ICompanyName = {
@@ -31,7 +31,7 @@ export interface IDataAllCarsForMenu {
 }
 // данные одного car для store и carMenu
 export type IOneCarForMenu = {
-  car_id: number,
+  car_id: string,
   car_name: string,
   checked: boolean,
   disconnect: boolean,

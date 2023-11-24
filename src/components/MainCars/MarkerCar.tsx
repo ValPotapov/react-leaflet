@@ -168,7 +168,7 @@ const MarkerCar: FC<CarProps> = ({ car, dataForHistory }) => {
   // Если true значит авто "в сети"
   const isConnection = timeDifference(String(car.last_track))
 
-  function getImgUrl(id: number) {
+  function getImgUrl(id: string) {
     if (Number(id) === 1) return process.env.PUBLIC_URL + '/img/car1.png'
     if (Number(id) === 2) return process.env.PUBLIC_URL + '/img/car2.png'
     if (Number(id) === 33) return process.env.PUBLIC_URL + '/img/car3.png'

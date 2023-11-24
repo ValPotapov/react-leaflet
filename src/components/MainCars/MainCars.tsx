@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 // import { useLocation } from 'react-router-dom';
 
-import { MapContainer, TileLayer } from 'react-leaflet';
+import { MapContainer, TileLayer, LayersControl } from 'react-leaflet';
 import 'leaflet-rotatedmarker';
 import L from 'leaflet';
 
@@ -21,6 +21,8 @@ function MainCars() {
 
   const [carsBounds, setCarsBounds] = useState<L.LatLngBoundsExpression | [] | any>(null)
   const [companyData, setCompanyData] = useState<ICompanyData | undefined>()
+  const [tileId, setTileId] = useState('tileId-1')
+
   const carsMapVariant = useAppSelector((state) => state.carsMap.carsMapConfig.variant);
 
   const mapRef = useRef<L.Map | null>(null)
@@ -34,8 +36,8 @@ function MainCars() {
   useEffect(() => {
     if (carsMapVariant === 'all') {
 
-      const abortController = new AbortController();
-      const companyData = getCarsFetch(abortController)
+      const abortCtrlInMainCars = new AbortController();
+      const companyData = getCarsFetch(abortCtrlInMainCars)
       companyData
         .then((data) => {
           const carBoundsArray = data.cars.map((car: ICarObject) => {
@@ -53,12 +55,14 @@ function MainCars() {
       if (carsPageconfig.storeReset) {
         dispatch(dataActions.reset())
       }
-      return () => abortController.abort();
+      return () => abortCtrlInMainCars.abort();
     }
 
-  },
+  }, [carsMapVariant, dispatch])
 
-    [carsMapVariant, dispatch])
+  const tileCheckHandler = (id: string) => {
+    setTileId(id)
+  }
 
   return !carsBounds ?
     (<Spinner />)
@@ -80,10 +84,49 @@ function MainCars() {
       >
         {/* <ZoomControl position="topleft" /> */}
         <CustomZoom />
-          <TileLayer
+        <LayersControl position="topright">
+          <LayersControl.Overlay name="Osm map" checked={tileId === 'tileId-1'}>
+            <TileLayer
+              id={'tileId-1'}
             attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"
-        />
+              eventHandlers={{
+                add: (e) => {
+                  tileCheckHandler(e.target.options.id)
+                  console.log("Added Layer:", e.target.options.id);
+                },
+                remove: (e) => {
+                  // console.log("Removed layer:", e.target.id);
+                }
+              }}
+            />
+          </LayersControl.Overlay>
+          <LayersControl.Overlay name="Google map" checked={tileId === 'tileId-2'}>
+            <TileLayer
+              id={'tileId-2'}
+              url="http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
+              subdomains={['mt0', 'mt1', 'mt2', 'mt3']}
+              eventHandlers={{
+                add: (e) => {
+                  tileCheckHandler(e.target.options.id)
+                },
+              }}
+            />
+          </LayersControl.Overlay>
+          <LayersControl.Overlay name="Спутник" checked={tileId === 'tileId-3'}>
+            <TileLayer
+              id={'tileId-3'}
+              url="http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
+              subdomains={['mt0', 'mt1', 'mt2', 'mt3']}
+              eventHandlers={{
+                add: (e) => {
+                  tileCheckHandler(e.target.options.id)
+                },
+              }}
+            />
+          </LayersControl.Overlay>
+        </LayersControl>
+
 
         {String(carsMapVariant) === 'all' && <PainCars mapBounds={carsBounds} carsDataStart={companyData} />}
         {String(carsMapVariant) === 'history' && <PaneHistoryMap />}
