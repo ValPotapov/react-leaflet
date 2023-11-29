@@ -7,30 +7,38 @@ import 'leaflet-rotatedmarker';
 
 import { useAppSelector } from '../../store';
 import getHistoryFetch from './lib/getHistoryFetch';
+import getCarsFetch from '../MainCars/lib/fetchGetCars';
+
 import isHasToushScreen from '../MainCars/lib/isMobile';
 import carsPageconfig from '../MainCars/lib/config';
 import zoomOutHandler from '../MainCars/lib/zoomOut';
 
-import { TDataAboutCarForHistoryMenu, IHistoryDataFromServer, IHistoryPoints, IHistoryCar } from '../../types/carsTypes';
+import { TDataAboutCarForHistoryMenu, IHistoryDataFromServer, IHistoryPoints, IHistoryCar, ICarObject } from '../../types/carsTypes';
 
 import { Spinner } from './IconComponent/Spinner';
 import LayerPoints from './LayerPoints';
 import LayersHistoryMarkers from './LayersHistoryMarkers';
 import HistoryLayerControl from './HistoryLayerControl';
 import BackLayerControl from './BackLayerControl';
-// type IPainCars = L.LatLngBoundsExpression | [][] | any
+import OneCarMarker from './OneCarMarker';
 
+interface hasLatLng {
+  lat: string;
+  lng: string;
+}
 const PaneHistoryMap = () => {
 
   const [dataFromServer, setDataFromServer] = useState<IHistoryDataFromServer | null>(null)
   const [pointsBounds, setPointsBounds] = useState<IHistoryPoints[] | []>([])
-  const [forFitBounds, setForFitBounds] = useState<L.LatLngBoundsExpression | [][] | any>(null)
+  const [forFitBounds, setForFitBounds] = useState<L.LatLngTuple[] | null>(null)
+  const [oneCarData, setOneCarData] = useState<ICarObject | null>(null)
 
   const [historyDataLoad, setHistoryDataLoad] = useState(false)
 
   const polilineRef = useRef<L.Polyline | null>(null)
 
   const carsItemFromHistoryForm = useAppSelector((state) => state.carsMap?.carsItemFromHistoryForm);
+  const parc_id = useAppSelector((state) => state.carsMap.companyName?.company_id)
 
   const isMobile = useMemo(() => isHasToushScreen(), [])// mobile -> true ? PC -> false
 
@@ -70,13 +78,15 @@ const PaneHistoryMap = () => {
   }
 
 
-  async function historyFetchHandler(data: TDataAboutCarForHistoryMenu) {
+  async function historyFetchHandler(data: TDataAboutCarForHistoryMenu, abortCtrlHistory: AbortController) {
     // получаем данные с сервера оправляем данные с формы из store
     // Получим либо данные либо пустой объект сформированный в getHistoryFetch
-    const historyServerData = await getHistoryFetch(data)
+    const historyServerData = await getHistoryFetch(data, abortCtrlHistory)
+    const oneCarData = await getOneCarFromServer(String(carsItemFromHistoryForm?.car_id))
 
     if (!historyServerData.car_id) {
       // ошибка нет car_id в ответе с сервера
+      setOneCarData(oneCarData!)
       errorHandler("Нет car_id")
       setHistoryDataLoad(true)
       return
@@ -84,6 +94,7 @@ const PaneHistoryMap = () => {
     if (historyServerData.history.length === 0 && historyServerData.points.length === 0) {
       // нет данных 
       errorHandler("оба массива (history и points) пусты")
+      setOneCarData(oneCarData!)
       setHistoryDataLoad(true)
       return
     }
@@ -123,12 +134,12 @@ const PaneHistoryMap = () => {
 
       }
     }
+    setOneCarData(oneCarData!)
     setPointsBounds(historyServerData.points)
     setDataFromServer(historyServerData)
     setForFitBounds(coordHistoryToFitBounds)
 
   }
-
 
   function errorHandler(msg: string) {
     console.warn("ERROR -->", msg);
@@ -165,15 +176,29 @@ const PaneHistoryMap = () => {
     return result
   }
 
+
+  async function getOneCarFromServer(carId: string) {
+    const abortController = new AbortController();
+    const allCarsData = await getCarsFetch(parc_id || '1', abortController)
+
+    const oneCarData = allCarsData.cars.find((el) => el.car_id === carId)
+    return oneCarData
+  };
+
   useEffect(() => {
+    const abortCtrlHistory = new AbortController();
     if (carsItemFromHistoryForm) {
-      historyFetchHandler(carsItemFromHistoryForm)
+      historyFetchHandler(carsItemFromHistoryForm, abortCtrlHistory)
+      // получить данные авто и положить в state
     }
+
     return () => {
       polilineRef.current?.remove()
       polilineRef.current = null
+      abortCtrlHistory.abort()
       setHistoryDataLoad(false)
     }
+    // Данные из формы даты истории
   }, [carsItemFromHistoryForm])
 
   useEffect(() => {
@@ -188,7 +213,7 @@ const PaneHistoryMap = () => {
         // console.log("getBoundsZoom", map.getBoundsZoom(forFitBounds));
         //   console.log("getCenter()", map.getCenter());
         map.fitBounds(forFitBounds)
-        zoomOutHandler(map)
+        // zoomOutHandler(map)
         // map.setView(map.getCenter())
         // map.setZoom(9.5)
         // map.zoomOut(-1)
@@ -197,14 +222,16 @@ const PaneHistoryMap = () => {
 
         setTimeout(() => {
           // zoomOut?.click()
+          zoomOutHandler(map)
           setHistoryDataLoad(true)
-        }, 300)
+        }, 200)
         // Добавляем линии на карту
         polilineRef.current?.addTo(map)
       }
     })
+    // когда есть точки для масштабирования карты
+  }, [forFitBounds]) 
 
-  }, [forFitBounds])
 
   // Удаляем Control
   useEffect(() => {
@@ -246,7 +273,12 @@ const PaneHistoryMap = () => {
           ))}
         {/* </LayerGroup> */}
 
-        <Pane name='historyMapPane-line' style={{ width: '100vh', }}></Pane>
+        <Pane name='historyMapPane-line' style={{ width: '100vh', }}></Pane> 
+        {oneCarData &&
+          <Pane name="OneCarMarker" style={{ width: '100vh', }}>
+            <OneCarMarker carStartData={oneCarData}></OneCarMarker>
+          </Pane>
+        }
       </>
 
     </div>

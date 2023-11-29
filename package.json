@@ -5,6 +5,7 @@
   "scripts": {
     "start": "env-cmd -f .env.local react-scripts start",
     "build": "env-cmd -f .env.production react-scripts build",
+    "start:prod": "env-cmd -f .env.production react-scripts start",
     "format:check": "prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
     "lint:check": "eslint --fix --max-warnings 0 'src/**/*.{js,jsx,ts,tsx}'",
     "update-i18n": "env-cmd -f .env.local node update-i18n.js"

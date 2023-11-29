@@ -10,11 +10,13 @@ import getCarsFetch from './lib/fetchGetCars';
 import isHasToushScreen from './lib/isMobile';
 import carsPageconfig from './lib/config';
 import zoomOutHandler from './lib/zoomOut';
+import sanitizeCompanyFetch from './lib/sanitizeCompanyFetch';
 
 import { ICarObject, ICompanyData, ICompanyName, TDataAboutCarForHistoryMenu } from '../../types/carsTypes';
 
 import MarkerCar from './MarkerCar';
 import CarsLayerControl from '../MenuCars/CarsLayerControl';
+import { Spinner } from '../HistoryComponents/IconComponent/Spinner';
 
 type IPainCars = L.LatLngBoundsExpression | [][] | any
 
@@ -26,6 +28,8 @@ const PainCars: FC<IPainCars> = ({ mapBounds, carsDataStart }) => {
   const carsFilterObject = useAppSelector((state) => state.carsMap.carsFilter);
 
   const [companyData, setCompanyData] = useState<ICompanyData>(carsDataStart)
+  const [markerDataLoad, setMarkerDataLoad] = useState<boolean>(false)
+  const parc_id = useAppSelector((state) => state.carsMap.companyName?.company_id)
 
   const isMobile = useMemo(() => isHasToushScreen(), [])// mobile -> true ? PC -> false
   const map = useMap();
@@ -34,7 +38,6 @@ const PainCars: FC<IPainCars> = ({ mapBounds, carsDataStart }) => {
   // Обновляется каждую секунду
   const dataCarsForMarrkers = [...companyData?.cars]
   // const dataCarsForMarrkers = setCompanyData((curr) => curr)?.cars// [...companyData?.cars]
-
 
   // Данные для меню - Названии коипании и Id
   // Стабильны обновляются только при обновлении карты
@@ -96,24 +99,28 @@ const PainCars: FC<IPainCars> = ({ mapBounds, carsDataStart }) => {
   // Получение данных с сервера
   useEffect(() => {
     const abortController = new AbortController();
-    const interval = setInterval(() => {
-      getCarsFetch(abortController)
-        .then(data => {
-          setCompanyData(data)
-        })
 
-    }, carsPageconfig.updateDelay);
+    const callback = markerDataLoad ? () => {
+      getCarsFetch(parc_id || '1', abortController)
+        .then(data => {
+          const companyData = sanitizeCompanyFetch(data)
+          setCompanyData(companyData)
+        })
+    } : () => { };
+
+    const interval = setInterval(callback, carsPageconfig.updateDelay);
 
     return () => {
       clearInterval(interval)
       // abortController.abort();
     };
-  }, [map, mapBounds]);
+  }, [mapBounds, markerDataLoad]);
 
   useEffect(() => {
     dispatch(carsMapActions.setCompanyName(menuHeaderData))
     dispatch(carsMapActions.setCarsDataForMenu(dataForMenuItem))
     dispatch(carsMapActions.setCarsFilterMarkers(makeFilterObject(carsDataStart.cars)))
+    setMarkerDataLoad(true)
   }, [carsDataStart, dispatch])
 
 
@@ -137,20 +144,21 @@ const PainCars: FC<IPainCars> = ({ mapBounds, carsDataStart }) => {
       const menuElement = document.querySelector('[data-control="cars-menu"]')?.closest('.leaflet-control');
       menuElement?.remove()
     }
-  }, [])
+  }, []);
 
   return (
     <div>
 
       <CarsLayerControl key={menuHeaderData.company_id} />
-
+      {!markerDataLoad && <Spinner />}
       <Pane name="carsMapPane" style={{ zIndex: 500, width: '100vh', }}>
-        {companyData && filterForMarkers.map((el: any) => {
-          return <MarkerCar
+        {companyData && filterForMarkers.map((el: any) => (<MarkerCar
             car={el}
+          // setMarkerDataLoad={setMarkerDataLoad}
             dataForHistory={getDataAboutCarForHistory(el)}
-            key={`${el.car_id}-${el.last_track}`} />
-        }
+            // key={`${el.car_id}-${el.last_track}`} />
+            key={`${el.car_id}-${el.last_track}-${carsFilterObject?.[el.car_id]}`} />
+        )
         )}
       </Pane>
 

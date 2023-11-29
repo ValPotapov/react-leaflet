@@ -25,8 +25,8 @@ const HistoryMenu: FC<IHistoryMenuProps> = ({ carData, className }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
-  const [dateMsForState, setDateForState] = useState<string | any>(carData.dataFromIso || '')
-  const [datMsToState, setDateToState] = useState<string | any>(carData.dataToIso || '')
+  const [dateMsForState, setDateForState] = useState<string>(carData.dataFromIso || '')
+  const [datMsToState, setDateToState] = useState<string>(carData.dataToIso || '')
 
   const [validDateCompare, setValidDateCompare] = useState(true)
 
@@ -55,7 +55,7 @@ const HistoryMenu: FC<IHistoryMenuProps> = ({ carData, className }) => {
 
     const selectedDateFor = event.target.value;
 
-    setDateForState((current: any) => current = selectedDateFor)
+    setDateForState((current) => current = selectedDateFor)
     setValidDateCompare(compareDate(selectedDateFor, datMsToState))
 
   }

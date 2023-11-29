@@ -62,7 +62,7 @@ const LayersHistoryMarkers: FC<TLayerHistoryMarkersProps> = ({ historyFromServer
           <p>Время :  {historyFromServer.timestamp}</p>
           <Divider />
 
-          <p>Скорость :  {historyFromServer.speed}</p>
+          <p>Скорость :  {historyFromServer.speed} км.ч</p>
         </div>
       </Popup>
     </PointMarker>

@@ -13,6 +13,8 @@ const carsPageconfig = {
 
   storeReset: true, // при загрузке карты '/cars' движение авто в реальном времени 
   // будет очищаться store карты грузов и маршрутов, также очищается local.storage
+
+  carIconSize: { width: 16, height: 36 } // Размер иконки авто
 }
 
 export default carsPageconfig;

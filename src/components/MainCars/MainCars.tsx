@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector, dataActions } from '../../store';
 import getCarsFetch from './lib/fetchGetCars';
 
 import { ICarObject, ICompanyData } from '../../types/carsTypes';
+import sanitizeCompanyFetch from './lib/sanitizeCompanyFetch';
 import carsPageconfig from './lib/config';
 
 import { Box } from '@mui/material';
@@ -20,11 +21,11 @@ import CustomZoom from './CustomZoom';
 function MainCars() {
 
   const [carsBounds, setCarsBounds] = useState<L.LatLngBoundsExpression | [] | any>(null)
-  const [companyData, setCompanyData] = useState<ICompanyData | undefined>()
+  const [companyData, setCompanyData] = useState<ICompanyData | null>(null)
   const [tileId, setTileId] = useState('tileId-1')
 
   const carsMapVariant = useAppSelector((state) => state.carsMap.carsMapConfig.variant);
-
+  const parc_id = useAppSelector((state) => state.carsMap.companyName?.company_id);
   const mapRef = useRef<L.Map | null>(null)
   const dispatch = useAppDispatch()
 
@@ -37,13 +38,18 @@ function MainCars() {
     if (carsMapVariant === 'all') {
 
       const abortCtrlInMainCars = new AbortController();
-      const companyData = getCarsFetch(abortCtrlInMainCars)
-      companyData
+      const companyDataFromServer = getCarsFetch(parc_id || '1', abortCtrlInMainCars)
+
+
+      companyDataFromServer
         .then((data) => {
-          const carBoundsArray = data.cars.map((car: ICarObject) => {
+          const companyData = sanitizeCompanyFetch(data)
+
+          const carBoundsArray = companyData.cars.map((car: ICarObject) => {
             return [parseFloat(String(car.lat)), parseFloat(String(car.lng))]
           })
-          setCompanyData(data)
+
+          setCompanyData(companyData)
           // L.control.zoom({ position: 'topright' })
 
           return setCarsBounds(carBoundsArray)
@@ -63,6 +69,8 @@ function MainCars() {
   const tileCheckHandler = (id: string) => {
     setTileId(id)
   }
+
+
 
   return !carsBounds ?
     (<Spinner />)
@@ -93,7 +101,6 @@ function MainCars() {
               eventHandlers={{
                 add: (e) => {
                   tileCheckHandler(e.target.options.id)
-                  console.log("Added Layer:", e.target.options.id);
                 },
                 remove: (e) => {
                   // console.log("Removed layer:", e.target.id);
@@ -128,7 +135,7 @@ function MainCars() {
         </LayersControl>
 
 
-        {String(carsMapVariant) === 'all' && <PainCars mapBounds={carsBounds} carsDataStart={companyData} />}
+        {(String(carsMapVariant) === 'all' && companyData) && <PainCars mapBounds={carsBounds} carsDataStart={companyData} />}
         {String(carsMapVariant) === 'history' && <PaneHistoryMap />}
 
         </MapContainer>
