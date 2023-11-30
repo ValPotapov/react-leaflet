@@ -11,7 +11,7 @@ const routes: RouteObject[] = [
     path: ROUTES.HOME,
     element: <Main />,
   },
-  { path: "cars", element: <MainCars /> }
+  { path: ROUTES.CARS, element: <MainCars /> }
 ];
 
 export const App = () => {

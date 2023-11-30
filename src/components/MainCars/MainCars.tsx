@@ -19,6 +19,7 @@ import PaneHistoryMap from '../HistoryComponents/PaneHistoryMap';
 import CustomZoom from './CustomZoom';
 
 function MainCars() {
+  console.log("Render MAinCars");
 
   const [carsBounds, setCarsBounds] = useState<L.LatLngBoundsExpression | [] | any>(null)
   const [companyData, setCompanyData] = useState<ICompanyData | null>(null)
